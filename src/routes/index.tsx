@@ -1670,6 +1670,51 @@ function OptionGrid({ options, selected, projectCards = false, onSelect }: { opt
 
 type EntryPrompt = { label: string; hint: string; placeholder: string; cta: string; numeric?: boolean };
 
+// قيم سريعة شائعة تُختار بنقرة واحدة بدل الكتابة اليدوية
+const ENTRY_PRESETS: Record<string, { label: string; value: string }[]> = {
+  res_bill: [
+    { label: "٢٠ ألف", value: "20000" },
+    { label: "٤٠ ألف", value: "40000" },
+    { label: "٧٠ ألف", value: "70000" },
+    { label: "١٢٠ ألف", value: "120000" },
+  ],
+  agr_bill: [
+    { label: "٥٠ ألف", value: "50000" },
+    { label: "١٠٠ ألف", value: "100000" },
+    { label: "٢٠٠ ألف", value: "200000" },
+    { label: "٤٠٠ ألف", value: "400000" },
+  ],
+  agr_pump_power: [
+    { label: "٥ حصان", value: "5" },
+    { label: "١٠ حصان", value: "10" },
+    { label: "١٥ حصان", value: "15" },
+    { label: "٢٥ حصان", value: "25" },
+  ],
+  agr_well_depth: [
+    { label: "٥٠ م", value: "50" },
+    { label: "١٠٠ م", value: "100" },
+    { label: "١٥٠ م", value: "150" },
+    { label: "٢٠٠ م", value: "200" },
+  ],
+  agr_hours: [
+    { label: "٤ ساعات", value: "4" },
+    { label: "٦ ساعات", value: "6" },
+    { label: "٨ ساعات", value: "8" },
+    { label: "١٠ ساعات", value: "10" },
+  ],
+  agr_pumps: [
+    { label: "مضخة", value: "1" },
+    { label: "مضختان", value: "2" },
+    { label: "٣ مضخات", value: "3" },
+  ],
+  item_qty: [
+    { label: "١", value: "1" },
+    { label: "٢", value: "2" },
+    { label: "٤", value: "4" },
+    { label: "٨", value: "8" },
+  ],
+};
+
 const ENTRY_PROMPTS: Record<string, EntryPrompt> = {
   res_bill: { label: "فاتورة الاستهلاك الشهري", hint: "ادخل متوسط الفاتورة الشهرية التي تدفعها بالريال اليمني", placeholder: "مثال: 43000 ريال يمني", cta: "متابعة", numeric: true },
   agr_bill: { label: "فاتورة المزرعة الشهرية", hint: "ادخل متوسط الفاتورة أو تكلفة الوقود الشهرية للمزرعة بالريال اليمني", placeholder: "مثال: 90000 ريال يمني", cta: "متابعة", numeric: true },
