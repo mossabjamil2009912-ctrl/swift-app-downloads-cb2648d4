@@ -1362,6 +1362,46 @@ function ServiceCard({ image, icon, title, description, action, tone, onClick }:
 
 }
 
+// مراحل رحلة طلب عرض السعر — مؤشر بصري يوضح للعميل موقعه من المسار
+const QUOTE_STAGES = ["نوع المشروع", "بيانات المشروع", "تصميم المنظومة", "عرض السعر"];
+
+function stageIndex(step: string, hasQuote: boolean): number {
+  if (hasQuote || /^(buy_|pay_|item_|qnext|aq_|done)/.test(step)) return 3;
+  if (/(result|browse|tie|quote_ask|visit_ask|inv_ask|phase_ask|specs|sld|study)/.test(step)) return 2;
+  if (/^(menu_sys3|main_menu|quote_menu|energy_menu|welcome_services|start)$/.test(step)) return 0;
+  return 1;
+}
+
+function StepProgress({ step, hasQuote }: { step: string; hasQuote: boolean }) {
+  const current = stageIndex(step, hasQuote);
+  return (
+    <div className="flex flex-wrap items-center gap-1.5">
+      {QUOTE_STAGES.map((stage, index) => {
+        const done = index < current;
+        const active = index === current;
+        return (
+          <span key={stage} className="flex items-center gap-1.5">
+            <span
+              className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[10px] font-black transition lg:text-[11px] ${
+                active
+                  ? "bg-brand text-brand-foreground shadow-sm"
+                  : done
+                    ? "bg-brand/10 text-brand"
+                    : "bg-muted text-muted-foreground"
+              }`}
+            >
+              {done ? <Check className="size-3" /> : <span className="grid size-3.5 place-items-center rounded-full bg-current/20 text-[8px]">{index + 1}</span>}
+              {stage}
+            </span>
+            {index < QUOTE_STAGES.length - 1 && <span className={`h-px w-3 ${done ? "bg-brand/50" : "bg-border"}`} />}
+          </span>
+        );
+      })}
+    </div>
+  );
+}
+
+
 function QuoteWorkspace({ view, session, step, draft, setDraft, onPick, onBack, onRestart, onOpenProduct }: { view: View; session: BotSession; step: string; draft: string; setDraft: (value: string) => void; onPick: (value: string) => void; onBack: () => void; onRestart: () => void; onOpenProduct?: ((id: string) => void) | undefined }) {
   const [selected, setSelected] = useState<string>("");
   // شاشة الدراسة تُعرض وحدها عند طلبها، وزر «العودة لعرض السعر» يعيد عرض الجدول
