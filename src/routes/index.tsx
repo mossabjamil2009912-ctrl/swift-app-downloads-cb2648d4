@@ -1768,11 +1768,26 @@ function entryPrompt(step: string, session: BotSession = {}): EntryPrompt {
   return ENTRY_PROMPTS[step] ?? { label: "البيانات المطلوبة", hint: "اكتب البيانات المطلوبة في الخانة ثم تابع", placeholder: "اكتب هنا", cta: "متابعة" };
 }
 
-function DataEntry({ value, onChange, onSubmit, prompt }: { value: string; onChange: (value: string) => void; onSubmit: () => void; prompt: EntryPrompt }) {
+function DataEntry({ value, onChange, onSubmit, prompt, presets, onQuick }: { value: string; onChange: (value: string) => void; onSubmit: () => void; prompt: EntryPrompt; presets?: { label: string; value: string }[] | undefined; onQuick?: ((value: string) => void) | undefined }) {
   return (
     <form onSubmit={(event) => { event.preventDefault(); onSubmit(); }} className="rounded-lg border border-border bg-muted/35 p-5">
       <label htmlFor="step-value" className="text-sm font-black">{prompt.label}</label>
       <p className="mt-1 text-xs text-muted-foreground">{prompt.hint}</p>
+      {presets && presets.length > 0 && (
+        <div className="stagger-in mt-3 flex flex-wrap gap-2">
+          {presets.map((preset) => (
+            <button
+              key={preset.value}
+              type="button"
+              onClick={() => { if (onQuick) onQuick(preset.value); else { onChange(preset.value); onSubmit(); } }}
+              className="rounded-full border border-border bg-card px-3.5 py-1.5 text-xs font-black text-navy shadow-sm transition hover:-translate-y-0.5 hover:border-brand hover:text-brand hover:shadow-md"
+            >
+              {preset.label}
+            </button>
+          ))}
+          <span className="self-center text-[10px] font-semibold text-muted-foreground">أو اكتب القيمة بنفسك</span>
+        </div>
+      )}
       <div className="mt-4 grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto]">
         <input
           id="step-value"
