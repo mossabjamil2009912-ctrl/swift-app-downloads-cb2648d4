@@ -746,11 +746,8 @@ function ActesApp() {
         <TopBar isAdmin={isAdmin} clientName={clientName} onExitAdmin={exitAdmin} onSettings={() => setSettingsOpen(true)} onExit={leaveApp} />
          <main ref={mainRef} className={`mx-auto flex w-full min-h-0 flex-1 px-3 py-3 pb-24 sm:px-6 lg:px-8 lg:pb-4 xl:px-10 2xl:px-14 ${isHome && !catalog ? "overflow-hidden" : "overflow-y-auto"}`}>
           {busy && (
-            <div className="fixed inset-0 z-50 grid place-items-center bg-overlay/35 backdrop-blur-[2px]">
-              <div className="flex items-center gap-3 rounded-lg border border-border bg-card px-6 py-4 text-sm font-bold shadow-xl">
-                <Loader2 className="size-5 animate-spin text-brand" /> جارٍ تجهيز الخطوة التالية
-              </div>
-            </div>
+            // شريط تقدّم رفيع لا يحجب الشاشة ولا يقطع سلاسة الانتقال بين الخطوات
+            <div role="status" aria-label="جارٍ تجهيز الخطوة التالية" className="thin-progress fixed inset-x-0 top-0 z-50 h-0.5 overflow-hidden bg-brand/15" />
           )}
 
           {notificationStatus === "sent" && (
@@ -1365,6 +1362,46 @@ function ServiceCard({ image, icon, title, description, action, tone, onClick }:
 
 }
 
+// مراحل رحلة طلب عرض السعر — مؤشر بصري يوضح للعميل موقعه من المسار
+const QUOTE_STAGES = ["نوع المشروع", "بيانات المشروع", "تصميم المنظومة", "عرض السعر"];
+
+function stageIndex(step: string, hasQuote: boolean): number {
+  if (hasQuote || /^(buy_|pay_|item_|qnext|aq_|done)/.test(step)) return 3;
+  if (/(result|browse|tie|quote_ask|visit_ask|inv_ask|phase_ask|specs|sld|study)/.test(step)) return 2;
+  if (/^(menu_sys3|main_menu|quote_menu|energy_menu|welcome_services|start)$/.test(step)) return 0;
+  return 1;
+}
+
+function StepProgress({ step, hasQuote }: { step: string; hasQuote: boolean }) {
+  const current = stageIndex(step, hasQuote);
+  return (
+    <div className="flex flex-wrap items-center gap-1.5">
+      {QUOTE_STAGES.map((stage, index) => {
+        const done = index < current;
+        const active = index === current;
+        return (
+          <span key={stage} className="flex items-center gap-1.5">
+            <span
+              className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[10px] font-black transition lg:text-[11px] ${
+                active
+                  ? "bg-brand text-brand-foreground shadow-sm"
+                  : done
+                    ? "bg-brand/10 text-brand"
+                    : "bg-muted text-muted-foreground"
+              }`}
+            >
+              {done ? <Check className="size-3" /> : <span className="grid size-3.5 place-items-center rounded-full bg-current/20 text-[8px]">{index + 1}</span>}
+              {stage}
+            </span>
+            {index < QUOTE_STAGES.length - 1 && <span className={`h-px w-3 ${done ? "bg-brand/50" : "bg-border"}`} />}
+          </span>
+        );
+      })}
+    </div>
+  );
+}
+
+
 function QuoteWorkspace({ view, session, step, draft, setDraft, onPick, onBack, onRestart, onOpenProduct }: { view: View; session: BotSession; step: string; draft: string; setDraft: (value: string) => void; onPick: (value: string) => void; onBack: () => void; onRestart: () => void; onOpenProduct?: ((id: string) => void) | undefined }) {
   const [selected, setSelected] = useState<string>("");
   // شاشة الدراسة تُعرض وحدها عند طلبها، وزر «العودة لعرض السعر» يعيد عرض الجدول
@@ -1390,11 +1427,12 @@ function QuoteWorkspace({ view, session, step, draft, setDraft, onPick, onBack, 
   };
 
   return (
-    <div key={step} className="screen-enter w-full space-y-6 pb-8">
+    <div key={step} className="step-slide w-full space-y-6 pb-8">
       <section className="min-w-0">
         <div className="mb-5 flex items-end justify-between gap-4 border-b border-border pb-3">
-          <div>
-            <h1 className="text-xl font-black sm:text-2xl">{title}</h1>
+          <div className="min-w-0">
+            <StepProgress step={step} hasQuote={Boolean(view.quote)} />
+            <h1 className="mt-2 text-xl font-black sm:text-2xl">{title}</h1>
             <span className="mt-2 block h-1 w-10 rounded-full bg-brand" />
           </div>
           <div className="flex shrink-0 items-center gap-2">
@@ -1459,7 +1497,7 @@ function QuoteWorkspace({ view, session, step, draft, setDraft, onPick, onBack, 
                   ? (() => { const info = shiftEntryInfo(session); return <ShiftEntry key={`shift-${info.offset}-${info.count}`} count={info.count} offset={info.offset} onSubmit={onPick} />; })()
                   : step === "pv_loads"
                     ? <HourlyLoadEntry onSubmit={onPick} />
-                    : <DataEntry value={draft} onChange={setDraft} prompt={entryPrompt(step, session)} onSubmit={submit} />)}
+                    : <DataEntry value={draft} onChange={setDraft} prompt={entryPrompt(step, session)} onSubmit={submit} presets={ENTRY_PRESETS[step]} onQuick={onPick} />)}
                 {visibleOptions.length > 0 && <OptionGrid options={visibleOptions} selected={selected} projectCards={isProjectSelection} onSelect={(value) => { setSelected(value); onPick(value); }} />}
               </div>
             )}
@@ -1632,6 +1670,51 @@ function OptionGrid({ options, selected, projectCards = false, onSelect }: { opt
 
 type EntryPrompt = { label: string; hint: string; placeholder: string; cta: string; numeric?: boolean };
 
+// قيم سريعة شائعة تُختار بنقرة واحدة بدل الكتابة اليدوية
+const ENTRY_PRESETS: Record<string, { label: string; value: string }[]> = {
+  res_bill: [
+    { label: "٢٠ ألف", value: "20000" },
+    { label: "٤٠ ألف", value: "40000" },
+    { label: "٧٠ ألف", value: "70000" },
+    { label: "١٢٠ ألف", value: "120000" },
+  ],
+  agr_bill: [
+    { label: "٥٠ ألف", value: "50000" },
+    { label: "١٠٠ ألف", value: "100000" },
+    { label: "٢٠٠ ألف", value: "200000" },
+    { label: "٤٠٠ ألف", value: "400000" },
+  ],
+  agr_pump_power: [
+    { label: "٥ حصان", value: "5" },
+    { label: "١٠ حصان", value: "10" },
+    { label: "١٥ حصان", value: "15" },
+    { label: "٢٥ حصان", value: "25" },
+  ],
+  agr_well_depth: [
+    { label: "٥٠ م", value: "50" },
+    { label: "١٠٠ م", value: "100" },
+    { label: "١٥٠ م", value: "150" },
+    { label: "٢٠٠ م", value: "200" },
+  ],
+  agr_hours: [
+    { label: "٤ ساعات", value: "4" },
+    { label: "٦ ساعات", value: "6" },
+    { label: "٨ ساعات", value: "8" },
+    { label: "١٠ ساعات", value: "10" },
+  ],
+  agr_pumps: [
+    { label: "مضخة", value: "1" },
+    { label: "مضختان", value: "2" },
+    { label: "٣ مضخات", value: "3" },
+  ],
+  item_qty: [
+    { label: "١", value: "1" },
+    { label: "٢", value: "2" },
+    { label: "٤", value: "4" },
+    { label: "٨", value: "8" },
+  ],
+};
+
 const ENTRY_PROMPTS: Record<string, EntryPrompt> = {
   res_bill: { label: "فاتورة الاستهلاك الشهري", hint: "ادخل متوسط الفاتورة الشهرية التي تدفعها بالريال اليمني", placeholder: "مثال: 43000 ريال يمني", cta: "متابعة", numeric: true },
   agr_bill: { label: "فاتورة المزرعة الشهرية", hint: "ادخل متوسط الفاتورة أو تكلفة الوقود الشهرية للمزرعة بالريال اليمني", placeholder: "مثال: 90000 ريال يمني", cta: "متابعة", numeric: true },
@@ -1685,11 +1768,26 @@ function entryPrompt(step: string, session: BotSession = {}): EntryPrompt {
   return ENTRY_PROMPTS[step] ?? { label: "البيانات المطلوبة", hint: "اكتب البيانات المطلوبة في الخانة ثم تابع", placeholder: "اكتب هنا", cta: "متابعة" };
 }
 
-function DataEntry({ value, onChange, onSubmit, prompt }: { value: string; onChange: (value: string) => void; onSubmit: () => void; prompt: EntryPrompt }) {
+function DataEntry({ value, onChange, onSubmit, prompt, presets, onQuick }: { value: string; onChange: (value: string) => void; onSubmit: () => void; prompt: EntryPrompt; presets?: { label: string; value: string }[] | undefined; onQuick?: ((value: string) => void) | undefined }) {
   return (
     <form onSubmit={(event) => { event.preventDefault(); onSubmit(); }} className="rounded-lg border border-border bg-muted/35 p-5">
       <label htmlFor="step-value" className="text-sm font-black">{prompt.label}</label>
       <p className="mt-1 text-xs text-muted-foreground">{prompt.hint}</p>
+      {presets && presets.length > 0 && (
+        <div className="stagger-in mt-3 flex flex-wrap gap-2">
+          {presets.map((preset) => (
+            <button
+              key={preset.value}
+              type="button"
+              onClick={() => { if (onQuick) onQuick(preset.value); else { onChange(preset.value); onSubmit(); } }}
+              className="rounded-full border border-border bg-card px-3.5 py-1.5 text-xs font-black text-navy shadow-sm transition hover:-translate-y-0.5 hover:border-brand hover:text-brand hover:shadow-md"
+            >
+              {preset.label}
+            </button>
+          ))}
+          <span className="self-center text-[10px] font-semibold text-muted-foreground">أو اكتب القيمة بنفسك</span>
+        </div>
+      )}
       <div className="mt-4 grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto]">
         <input
           id="step-value"
