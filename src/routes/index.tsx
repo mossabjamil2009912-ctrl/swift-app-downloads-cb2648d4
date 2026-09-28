@@ -1387,11 +1387,12 @@ function QuoteWorkspace({ view, session, step, draft, setDraft, onPick, onBack, 
   };
 
   return (
-    <div key={step} className="screen-enter w-full space-y-6 pb-8">
+    <div key={step} className="step-slide w-full space-y-6 pb-8">
       <section className="min-w-0">
         <div className="mb-5 flex items-end justify-between gap-4 border-b border-border pb-3">
-          <div>
-            <h1 className="text-xl font-black sm:text-2xl">{title}</h1>
+          <div className="min-w-0">
+            <StepProgress step={step} hasQuote={Boolean(view.quote)} />
+            <h1 className="mt-2 text-xl font-black sm:text-2xl">{title}</h1>
             <span className="mt-2 block h-1 w-10 rounded-full bg-brand" />
           </div>
           <div className="flex shrink-0 items-center gap-2">
