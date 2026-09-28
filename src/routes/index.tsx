@@ -335,17 +335,28 @@ function ActesApp() {
   useEffect(() => {
     if (!view || gate === "closed") return;
     let cancelled = false;
-    const run = () => {
-      if (cancelled) return;
-      // نحضّر كل الوجهات الممكنة من هذه الشاشة، بما فيها الرجوع خطوة،
-      // حتى ينطلق الصوت فوراً عند العودة للخلف بلا انتظار.
-      const targets = [...view.options.map((o) => o.id), "back_step"];
-      const seen = new Set<string>();
-      for (const id of targets) {
-        if (seen.has(id)) continue;
-        seen.add(id);
-        const title = view.options.find((o) => o.id === id)?.title || "";
-        if (/قريب(?:اً|ا)?/.test(title)) continue;
+    const handles: number[] = [];
+    // نحضّر كل الوجهات الممكنة من هذه الشاشة، بما فيها الرجوع خطوة،
+    // لكن كل وجهة تُحسب في فترة خمول مستقلة حتى لا يتجمّد الانتقال بين الشاشات.
+    const targets = [...view.options.map((o) => o.id), "back_step"];
+    const seen = new Set<string>();
+    const queue = targets.filter((id) => {
+      if (seen.has(id)) return false;
+      seen.add(id);
+      const title = view.options.find((o) => o.id === id)?.title || "";
+      return !/قريب(?:اً|ا)?/.test(title);
+    });
+
+    const idle = (fn: () => void) => {
+      const ric = (window as unknown as { requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number }).requestIdleCallback;
+      if (ric) return ric(fn, { timeout: 1500 });
+      return window.setTimeout(fn, 120);
+    };
+
+    const step = (index: number) => {
+      if (cancelled || index >= queue.length) return;
+      const id = queue[index] as string;
+      try {
         const previewSession = structuredClone(sessionRef.current) as typeof sessionRef.current;
         const preview = runBot(previewSession, {
           phone: PHONE,
@@ -353,24 +364,27 @@ function ActesApp() {
           message_id: `web.prefetch.${id}`,
           phone_number_id: "actes-web",
         });
-        if (!preview || preview.step === "start") continue;
-        // نفس منطق النطق المستعمل عند العرض الفعلي: عرض السعر والدراسة لهما نص خاص،
-        // حتى يجهز صوتهما مسبقاً في الكاش وينطلق فوراً بلا انتظار.
-        const previewView = buildView(preview, preview.step || "start");
-        const previewResidential = String(previewSession["menu_choice"] ?? "") === "1";
-        prepareSpeech(previewView.study?.fresh
-          ? studySpeech(previewView.study)
-          : previewView.quote
-            ? quoteSpeech(previewView.quote, { residential: previewResidential })
-            : viewSpeech(previewView, { step: preview.step || "" }), true);
+        if (preview && preview.step !== "start") {
+          // نفس منطق النطق المستعمل عند العرض الفعلي: عرض السعر والدراسة لهما نص خاص.
+          const previewView = buildView(preview, preview.step || "start");
+          const previewResidential = String(previewSession["menu_choice"] ?? "") === "1";
+          prepareSpeech(previewView.study?.fresh
+            ? studySpeech(previewView.study)
+            : previewView.quote
+              ? quoteSpeech(previewView.quote, { residential: previewResidential })
+              : viewSpeech(previewView, { step: preview.step || "" }), true);
+        }
+      } catch {
+        // تجاهل أي فشل في التحضير المسبق؛ فهو تحسين اختياري فقط
       }
+      handles.push(idle(() => step(index + 1)));
     };
-    // التحضير يبدأ فوراً بعد رسم الشاشة مباشرة، حتى يكون صوت الشاشة التالية جاهزاً
-    // قبل أن ينقر المستخدم، فينطلق النطق مع النقرة بلا انتظار.
-    const handle = window.setTimeout(run, 0);
+
+    // نؤجل بداية التحضير حتى تستقر الشاشة الجديدة وتنتهي حركة ظهورها.
+    handles.push(idle(() => step(0)));
     return () => {
       cancelled = true;
-      window.clearTimeout(handle);
+      for (const handle of handles) window.clearTimeout(handle);
     };
 
   }, [gate, view]);
@@ -1427,7 +1441,7 @@ function QuoteWorkspace({ view, session, step, draft, setDraft, onPick, onBack, 
   };
 
   return (
-    <div key={step} className="step-slide w-full space-y-6 pb-8">
+    <div className="w-full space-y-6 pb-8">
       <section className="min-w-0">
         <div className="mb-5 flex items-end justify-between gap-4 border-b border-border pb-3">
           <div className="min-w-0">
