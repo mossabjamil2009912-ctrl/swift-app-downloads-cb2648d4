@@ -321,8 +321,11 @@ export function speakScreen(key: string, text: string) {
   stopSpeaking();
   lastScreen = key;
   pendingKey = "";
-  // بلا أي انتظار مصطنع: الجلب يبدأ فوراً، والصوت المخزَّن مسبقاً ينطلق في الحال.
-  void speak(text, true);
+  // نبدأ النطق بعد رسم الشاشة الجديدة مباشرة، حتى لا يؤخّر تجهيز الصوت ظهور الشاشة.
+  const start = () => { void speak(text, true); };
+  if (typeof window !== "undefined" && typeof window.requestAnimationFrame === "function") {
+    window.requestAnimationFrame(() => window.setTimeout(start, 0));
+  } else start();
 }
 
 export function prepareWelcome() { prepareSpeech(WELCOME[currentLang()], true); }
