@@ -2013,7 +2013,7 @@ export function runStateMachine(__session, __parsed, __itemPrices) {
   }
 
   function comPhaseAsk() {
-    return W('نوع توصيل الكهرباء في المنشأة\n\nواحد فاز للأحمال العادية، أو ثلاثة فاز للأحمال التجارية _');
+    return W('نوع توصيل الكهرباء في المنشأة\n\nاختر Single Phase أو Three Phase _');
   }
   function comPhase3Map(code) {
     var map = {
@@ -4939,8 +4939,8 @@ export function runStateMachine(__session, __parsed, __itemPrices) {
     }
     if (st === 'com_phase_ask') {
       return { kind: 'buttons', buttons: [
-        { id: '1', title: '1 فاز (أحمال عادية)' },
-        { id: '2', title: '3 فاز (أحمال تجارية)' },
+        { id: '1', title: 'Single Phase' },
+        { id: '2', title: 'Three Phase' },
         backStepBtn()
       ] };
     }
