@@ -10,12 +10,18 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as SldtestRouteImport } from './routes/sldtest'
 import { Route as ApiTtsRouteImport } from './routes/api/tts'
 import { Route as ApiPublicWaInvoiceRouteImport } from './routes/api/public/wa-invoice'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SldtestRoute = SldtestRouteImport.update({
+  id: '/sldtest',
+  path: '/sldtest',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiTtsRoute = ApiTtsRouteImport.update({
@@ -31,30 +37,34 @@ const ApiPublicWaInvoiceRoute = ApiPublicWaInvoiceRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/sldtest': typeof SldtestRoute
   '/api/tts': typeof ApiTtsRoute
   '/api/public/wa-invoice': typeof ApiPublicWaInvoiceRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/sldtest': typeof SldtestRoute
   '/api/tts': typeof ApiTtsRoute
   '/api/public/wa-invoice': typeof ApiPublicWaInvoiceRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/sldtest': typeof SldtestRoute
   '/api/tts': typeof ApiTtsRoute
   '/api/public/wa-invoice': typeof ApiPublicWaInvoiceRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/api/tts' | '/api/public/wa-invoice'
+  fullPaths: '/' | '/sldtest' | '/api/tts' | '/api/public/wa-invoice'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/api/tts' | '/api/public/wa-invoice'
-  id: '__root__' | '/' | '/api/tts' | '/api/public/wa-invoice'
+  to: '/' | '/sldtest' | '/api/tts' | '/api/public/wa-invoice'
+  id: '__root__' | '/' | '/sldtest' | '/api/tts' | '/api/public/wa-invoice'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  SldtestRoute: typeof SldtestRoute
   ApiTtsRoute: typeof ApiTtsRoute
   ApiPublicWaInvoiceRoute: typeof ApiPublicWaInvoiceRoute
 }
@@ -66,6 +76,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sldtest': {
+      id: '/sldtest'
+      path: '/sldtest'
+      fullPath: '/sldtest'
+      preLoaderRoute: typeof SldtestRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/tts': {
@@ -87,6 +104,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  SldtestRoute: SldtestRoute,
   ApiTtsRoute: ApiTtsRoute,
   ApiPublicWaInvoiceRoute: ApiPublicWaInvoiceRoute,
 }
