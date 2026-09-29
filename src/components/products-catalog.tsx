@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { ArrowRight, BatteryCharging, Check, ChevronDown, Copy, Download, Eye, FileText, Gauge, Info, Layers, Link2, ListChecks, MessageCircle, Play, Share2, Sparkles, Sun, Users, Wrench, X, Zap } from "lucide-react";
 import QRCode from "qrcode";
 import { CATEGORIES, findProduct, matchCompatibleProducts, productsByCategory, quickSpecs, type Product, type ProductCategory, type ProductFile } from "@/lib/products-data";
-import { isVoiceOn, isVoicePlatform, speakScreen, stopSpeaking } from "@/lib/voice-guide";
+import { isVoiceOn, isVoicePlatform, speakScreen, speakScreenAfterCurrent, stopSpeaking } from "@/lib/voice-guide";
 import ProductVideoPlayer from "@/components/product-video";
 import { getProductVideo, videoIntroNarration } from "@/lib/product-video";
 
