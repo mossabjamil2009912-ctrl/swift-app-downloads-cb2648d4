@@ -1477,6 +1477,9 @@ function QuoteWorkspace({ view, session, step, draft, setDraft, onPick, onBack, 
   const isProjectSelection = step === "menu_sys3";
   // شاشة حلول الطاقة: بطاقتان عريضتان بدل زرين صغيرين
   const isEnergyMenu = step === "energy_menu";
+  // شاشات طلب صنف محدد: بطاقات بصور حقيقية للأصناف
+  const isItemCards = step === "item_menu" || step === "item_pick";
+
   // مسار الدعم الفني: مؤشر مراحل خاص به بدل مراحل عرض السعر
   const isSupportPath = step.startsWith("sup_");
   // شاشة عرض السعر الرسمي: أربعة أزرار مباشرة بألوان مميزة لكل خدمة
