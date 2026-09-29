@@ -19,7 +19,6 @@ export const SCRIPTS: Record<string, Script> = {
   menu_sys3: S("حَدِّدْ نَوْعَ نِظَامِ المَشْرُوع: نِظَامٌ سَكَنِيّ، نِظَامٌ تِجَارِيّ، نِظَامٌ صِنَاعِيّ، نِظَامٌ زِرَاعِيّ.", "Choose your project system type: residential system, commercial system, industrial system, or agricultural system.", "请确定项目的系统类型：住宅系统、商业系统、工业系统、农业系统。"),
   main_menu: S("حَدِّدْ نَوْعَ نِظَامِ المَشْرُوع: نِظَامٌ سَكَنِيّ، نِظَامٌ تِجَارِيّ، نِظَامٌ صِنَاعِيّ، نِظَامٌ زِرَاعِيّ.", "Choose your project system type: residential system, commercial system, industrial system, or agricultural system.", "请确定项目的系统类型：住宅系统、商业系统、工业系统、农业系统。"),
 
-  welcome_services: S("الشَّاشَةُ الرَّئِيسِيَّة. اخْتَرْ خِدْمَتَكَ.", "Main screen. Choose the service you need.", "主界面。请选择您需要的服务。"),
 
   // ===== السكني =====
   res_bill: S("المَنْظُومَةُ السَّكَنِيَّة. أَدْخِلْ مُتَوَسِّطَ فَاتُورَتِكَ الشَّهْرِيَّةِ بِالرِّيَالِ اليَمَنِيّ، أَوْ تَصَفَّحِ المَنْظُومَاتِ الجَاهِزَة.", "Residential system. Enter your average monthly bill in Yemeni riyals, or browse the ready systems.", "住宅系统。请输入月均账单金额（也门里亚尔），或浏览现成系统。", true),
