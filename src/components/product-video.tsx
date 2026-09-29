@@ -8,10 +8,12 @@ import { isVoiceOn, speak, stopSpeaking, unlockVoice } from "@/lib/voice-guide";
 export default function ProductVideoPlayer({
   video,
   title,
+  narration: narrationProp,
   onFinish,
 }: {
   video: ProductVideo;
   title: string;
+  narration?: string;
   onFinish: () => void;
 }) {
   const ref = useRef<HTMLVideoElement | null>(null);
@@ -19,7 +21,7 @@ export default function ProductVideoPlayer({
   const [muted, setMuted] = useState(!isVoiceOn());
   const [time, setTime] = useState(0);
   const [duration, setDuration] = useState(0);
-  const narration = videoNarration(title, video);
+  const narration = narrationProp || videoNarration(title, video);
   const spokenRef = useRef("");
 
   // الفيديو نفسه بلا مسار صوتي، والشرح يأتي من التعليق الصوتي العربي.

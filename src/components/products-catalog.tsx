@@ -4,7 +4,7 @@ import QRCode from "qrcode";
 import { CATEGORIES, findProduct, matchCompatibleProducts, productsByCategory, quickSpecs, type Product, type ProductCategory, type ProductFile } from "@/lib/products-data";
 import { isVoiceOn, isVoicePlatform, speakScreen, stopSpeaking } from "@/lib/voice-guide";
 import ProductVideoPlayer from "@/components/product-video";
-import { getProductVideo } from "@/lib/product-video";
+import { getProductVideo, videoIntroNarration } from "@/lib/product-video";
 
 
 // خدمة معلوماتية فقط — لا تحتوي أي زر بيع أو ربط بمسارات عروض الأسعار.
@@ -323,10 +323,20 @@ function ProductDetail({ product, onOpen, onBack, backLabel }: { product: Produc
   const video = useMemo(() => getProductVideo(product.id), [product.id]);
   const [reelDone, setReelDone] = useState(!video);
   useEffect(() => { setReelDone(!getProductVideo(product.id)); }, [product.id]);
-  useScreenVoice(
-    `catalog-product-${product.id}`,
-    reelDone ? `${product.name} من ${product.brand}. الموديل ${product.model}. ${product.description}` : "",
-  );
+  // بعد الفيديو: لا نكرّر الاسم والموديل والقدرة والمواصفات (شرحها الفيديو)، بل المميزات والاستخدامات فقط.
+  const afterVideoText = useMemo(() => {
+    if (video) {
+      const feats = product.features.slice(0, 3).join("، ");
+      const uses = product.uses.slice(0, 3).join("، ");
+      return [
+        feats ? `أبرز المميزات: ${feats}.` : "",
+        uses ? `الاستخدامات: ${uses}.` : "",
+        product.suitableFor,
+      ].filter(Boolean).join(" ");
+    }
+    return `${product.name} من ${product.brand}. الموديل ${product.model}. ${product.description}`;
+  }, [product, video]);
+  useScreenVoice(`catalog-product-${product.id}`, reelDone ? afterVideoText : "");
   const [viewFile, setViewFile] = useState<ProductFile | null>(null);
   const [shareOpen, setShareOpen] = useState(false);
   const summaryRows = useMemo(() => quickSpecs(product, 6), [product]);
@@ -344,7 +354,13 @@ function ProductDetail({ product, onOpen, onBack, backLabel }: { product: Produc
 
           <span className="text-[11px] font-black text-skyline">{product.brand}</span>
         </div>
-        <ProductVideoPlayer key={product.id} video={video} title={`${product.name} — ${product.model}`} onFinish={() => setReelDone(true)} />
+        <ProductVideoPlayer
+          key={product.id}
+          video={video}
+          title={`${product.name} — ${product.model}`}
+          narration={videoIntroNarration(product, video)}
+          onFinish={() => setReelDone(true)}
+        />
       </div>
     );
   }
