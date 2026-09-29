@@ -82,8 +82,9 @@ export default function PvsystStudy({ study, actions }: Props) {
         <div>
           <h3 className="text-sm font-black">دراسة المحاكاة الشمسية (PVsyst)</h3>
           <p className="text-[10px] text-muted-foreground">
-            {result.reference ? `رقم الدراسة: ${result.reference}` : "تقرير أداء المنظومة"}
-            {result.customer ? ` — العميل: ${result.customer}` : ""}
+            {result.customer ? `Project: ${result.customer}` : "تقرير أداء المنظومة"}
+            {s.kwp ? ` — Variant: ${nf(s.kwp, 0)} kWp` : ""}
+            {result.reference ? ` — رقم الدراسة: ${result.reference}` : ""}
           </p>
         </div>
       </div>
