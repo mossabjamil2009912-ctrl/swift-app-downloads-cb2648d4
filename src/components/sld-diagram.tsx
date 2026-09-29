@@ -183,7 +183,7 @@ export function SldSvg({ m }: { m: SldModel }) {
             return (
               <g key={i}>
                 {[0, 1, 2].map((k) => (
-                  <PvSymbol key={k} x={xPv + k * 30} y={y} width-ignore="" w={26} h={22} />
+                  <PvSymbol key={k} x={xPv + k * 30} y={y} w={26} h={22} />
                 ))}
                 <text x={xPv + 96} y={y + 15} fontFamily={F} fontSize={8.4} fill={C.ink}>
                   {`String ${i + 1} — ${pv.perString} × ${pv.wp} Wp`}
