@@ -1,9 +1,11 @@
 {
   "version": 1,
-  "asset_id": "db0a63bd-a9bb-4643-8738-e93ac6e26ca2",
-  "project_id": "f5b4429a-1e9b-4c82-a663-d97fcb5aa16f",
-  "url": "/__l5e/assets-v1/db0a63bd-a9bb-4643-8738-e93ac6e26ca2/deye-sun-60-80k-sg02hp3.mp4",
+  "asset_id": "38e84c75-7c02-4ce7-8998-82db7d042d2b",
+  "project_id": "3a339321-7177-4489-bf9f-a9f1851360ee",
+  "url": "/__l5e/assets-v1/38e84c75-7c02-4ce7-8998-82db7d042d2b/deye-sun-60-80k-sg02hp3.mp4",
+  "r2_key": "a/v1/3a339321-7177-4489-bf9f-a9f1851360ee/38e84c75-7c02-4ce7-8998-82db7d042d2b/deye-sun-60-80k-sg02hp3.mp4",
   "original_filename": "deye-sun-60-80k-sg02hp3.mp4",
   "size": 9312852,
-  "created_at": "2026-09-28T14:44:13Z"
+  "content_type": "video/mp4",
+  "created_at": "2026-09-29T21:13:21Z"
 }

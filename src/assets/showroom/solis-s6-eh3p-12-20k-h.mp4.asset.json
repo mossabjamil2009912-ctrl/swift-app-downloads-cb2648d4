@@ -1,9 +1,11 @@
 {
   "version": 1,
-  "asset_id": "708239d1-a170-4ad2-93d3-cf2c102277d2",
-  "project_id": "f5b4429a-1e9b-4c82-a663-d97fcb5aa16f",
-  "url": "/__l5e/assets-v1/708239d1-a170-4ad2-93d3-cf2c102277d2/solis-s6-eh3p-12-20k-h.mp4",
+  "asset_id": "146ee1c7-3101-4efd-944c-f06a5995b4d3",
+  "project_id": "3a339321-7177-4489-bf9f-a9f1851360ee",
+  "url": "/__l5e/assets-v1/146ee1c7-3101-4efd-944c-f06a5995b4d3/solis-s6-eh3p-12-20k-h.mp4",
+  "r2_key": "a/v1/3a339321-7177-4489-bf9f-a9f1851360ee/146ee1c7-3101-4efd-944c-f06a5995b4d3/solis-s6-eh3p-12-20k-h.mp4",
   "original_filename": "solis-s6-eh3p-12-20k-h.mp4",
   "size": 7247990,
-  "created_at": "2026-09-28T14:51:50Z"
+  "content_type": "video/mp4",
+  "created_at": "2026-09-29T21:14:11Z"
 }
