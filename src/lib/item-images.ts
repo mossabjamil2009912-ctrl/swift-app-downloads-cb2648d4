@@ -1,0 +1,63 @@
+// صور حقيقية لأصناف «طلب صنف محدد» — مصدر كل صورة هو صور الكتالوج الرسمية المستخدمة في «تعرف على منتجاتنا».
+// لا تُضاف صورة لصنف إلا إذا كانت صورة الموديل نفسه موجودة فعلاً؛ الأصناف بدون صورة معتمدة تبقى بأيقونة.
+import p2 from "@/assets/products/p2.webp";
+import p3 from "@/assets/products/p3.webp";
+import p4 from "@/assets/products/p4.webp";
+import p7 from "@/assets/products/p7.webp";
+import p8 from "@/assets/products/p8.webp";
+import p9 from "@/assets/products/p9.webp";
+import p11 from "@/assets/products/p11.webp";
+import p12 from "@/assets/products/p12.webp";
+import p13 from "@/assets/products/p13.webp";
+import p18 from "@/assets/products/p18.webp";
+import p19 from "@/assets/products/p19.webp";
+import lithium12v314ah from "@/assets/products/lithium-12v-314ah.png.asset.json";
+import cubeM5a from "@/assets/products/pylontech-powercube-m5a.png.asset.json";
+
+/** صورة كل قسم في شاشة «طلب صنف محدد». */
+export const ITEM_CATEGORY_IMAGES: Record<string, string> = {
+  "ألواح شمسية": p8,
+  إنفرترات: p11,
+  بطاريات: p2,
+  "كبائن وراكات": p7,
+};
+
+/** صورة كل صنف، بحسب اسمه كما يظهر في القائمة (بدون كود الموديل بين قوسين). */
+const ITEM_IMAGES: Record<string, string> = {
+  "لوح سنتك N-Type 595 وات": p8,
+  "لوح سنتك N-Type 720 وات": p9,
+
+  "إنفرتر 8 كيلو سنجل فاز": p13,
+  "إنفرتر 12 كيلو سنجل فاز": p13,
+  "إنفرتر 12 كيلو ثري فاز": p18,
+  "إنفرتر 16 كيلو ثري فاز": p11,
+  "إنفرتر 20 كيلو ثري فاز": p11,
+  "إنفرتر دايا هايبرد 50 كيلو ثري فاز": p12,
+  "إنفرتر سوليز هايبرد 50 كيلو ثري فاز": p19,
+
+  "بطارية ليثيوم 1.28 كيلو": p2,
+  "بطارية ليثيوم 2.56 كيلو": p3,
+  "بطارية ليثيوم 4 كيلو": lithium12v314ah.url,
+  "بطارية ليثيوم 5.12 كيلو": cubeM5a.url,
+  "بطارية ليثيوم 16 كيلو": p4,
+
+  "راك بطارية بايلونتك 104 كيلو وات ساعة 6000 دورة": p7,
+  "راك بطارية بايلونتك 61.5 كيلو وات ساعة 6000 دورة": p7,
+};
+
+const TASHKEEL = /[\u064B-\u0652]/g;
+
+function normalize(text: string): string {
+  return text
+    .replace(TASHKEEL, "")
+    .replace(/\s*\([^)]*\)\s*$/, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+/** صورة الصنف إن وُجدت صورة حقيقية معتمدة له، وإلا undefined. */
+export function itemImage(title: string): string | undefined {
+  const key = normalize(title);
+  if (ITEM_IMAGES[key]) return ITEM_IMAGES[key];
+  return ITEM_CATEGORY_IMAGES[key];
+}
