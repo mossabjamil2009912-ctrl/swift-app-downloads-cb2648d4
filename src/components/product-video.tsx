@@ -40,8 +40,7 @@ export default function ProductVideoPlayer({
     void speak(narration, true);
   }, [narration, muted]);
 
-  // إيقاف التعليق عند مغادرة الشاشة.
-  useEffect(() => () => stopSpeaking(), []);
+  // لا نوقف التعليق عند إخفاء المشغّل: شرح صفحة المنتج يكمل مباشرة بعد تعليق الفيديو بلا انقطاع.
 
   const cue = video.cues.find((c) => time >= c.at && time < c.until);
   const progress = duration ? Math.min(100, (time / duration) * 100) : 0;
