@@ -384,9 +384,9 @@ export default function PvsystStudy({ study, actions }: Props) {
       <button
         type="button"
         onClick={() => downloadPvsystReport(result)}
-        className="mt-4 flex w-full items-center justify-center gap-2 rounded-full bg-brand px-5 py-3 text-sm font-black text-brand-foreground shadow-md transition hover:opacity-90"
+        className="mt-4 inline-flex items-center justify-center gap-1.5 self-start rounded-full border border-black/10 bg-white px-4 py-1.5 text-xs font-bold text-foreground shadow-sm transition hover:bg-black/5"
       >
-        <Download className="size-4" />
+        <Download className="size-3.5" />
         تحميل التقرير الكامل
       </button>
 
