@@ -1641,9 +1641,10 @@ function itemSpec(text: string): string {
   return "";
 }
 
-function OptionGrid({ options, selected, projectCards = false, energyCards = false, onSelect }: { options: View["options"]; selected: string; projectCards?: boolean; energyCards?: boolean; onSelect: (value: string) => void }) {
+function OptionGrid({ options, selected, projectCards = false, energyCards = false, itemCards = false, onSelect }: { options: View["options"]; selected: string; projectCards?: boolean; energyCards?: boolean; itemCards?: boolean; onSelect: (value: string) => void }) {
 
-  const asActions = !energyCards && options.length <= 2 && options.every((option) => !option.description);
+  const asActions = !energyCards && !itemCards && options.length <= 2 && options.every((option) => !option.description);
+
 
   // شاشة حلول الطاقة: بطاقتان عريضتان واضحتان تملآن الشاشة
   if (energyCards) {
