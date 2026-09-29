@@ -327,12 +327,14 @@ function ProductDetail({ product, onOpen, onBack, backLabel }: { product: Produc
   const video = useMemo(() => getProductVideo(product.id), [product.id]);
   const [reelDone, setReelDone] = useState(!video);
   useEffect(() => { setReelDone(!getProductVideo(product.id)); }, [product.id]);
-  // بعد الفيديو: لا نكرّر الاسم والموديل والقدرة والمواصفات (شرحها الفيديو)، بل المميزات والاستخدامات فقط.
+  // بعد الفيديو: لا نكرّر الاسم والموديل والقدرة والمواصفات (شرحها الفيديو)،
+  // بل نكمل بقية صفحة الوصف: نبذة المنتج، المميزات، الاستخدامات، ولمن يناسب.
   const afterVideoText = useMemo(() => {
     if (video) {
-      const feats = product.features.slice(0, 3).join("، ");
-      const uses = product.uses.slice(0, 3).join("، ");
+      const feats = product.features.slice(0, 4).join("، ");
+      const uses = product.uses.slice(0, 4).join("، ");
       return [
+        product.about,
         feats ? `أبرز المميزات: ${feats}.` : "",
         uses ? `الاستخدامات: ${uses}.` : "",
         product.suitableFor,
@@ -340,7 +342,7 @@ function ProductDetail({ product, onOpen, onBack, backLabel }: { product: Produc
     }
     return `${product.name} من ${product.brand}. الموديل ${product.model}. ${product.description}`;
   }, [product, video]);
-  useScreenVoice(`catalog-product-${product.id}`, reelDone ? afterVideoText : "");
+  useScreenVoice(`catalog-product-${product.id}`, reelDone ? afterVideoText : "", !!video);
   const [viewFile, setViewFile] = useState<ProductFile | null>(null);
   const [shareOpen, setShareOpen] = useState(false);
   const summaryRows = useMemo(() => quickSpecs(product, 6), [product]);
