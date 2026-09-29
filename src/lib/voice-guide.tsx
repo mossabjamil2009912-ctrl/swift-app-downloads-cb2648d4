@@ -101,15 +101,16 @@ export function stopSpeaking() {
   if (audio) {
     audio.pause();
     try { audio.currentTime = 0; } catch { /* تجاهل */ }
-    audio.removeAttribute("src");
-    try { audio.load(); } catch { /* تجاهل */ }
   }
   finishPlayback?.();
   finishPlayback = null;
   playbackDone = Promise.resolve();
-  // إيقاف أي نطق داخلي للمتصفح (صوت رجولي افتراضي) إن وُجد من جلسة سابقة.
-  if (typeof window !== "undefined") window.speechSynthesis?.cancel();
+  // إيقاف نطق المتصفح الداخلي مؤجَّل: استدعاؤه فوراً يجمّد الواجهة على ويندوز.
+  if (typeof window !== "undefined" && window.speechSynthesis?.speaking) {
+    setTimeout(() => { try { window.speechSynthesis?.cancel(); } catch { /* تجاهل */ } }, 0);
+  }
 }
+
 
 
 /** تُسقط كلمة «اختر» إذا جاءت آخر الجملة؛ التوجيه للقائمة يكفي دون أمر مباشر في النهاية. */

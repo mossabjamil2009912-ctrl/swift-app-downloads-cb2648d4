@@ -347,9 +347,14 @@ function ActesApp() {
       return !/قريب(?:اً|ا)?/.test(title);
     });
 
+    type IdleWin = {
+      requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number;
+      cancelIdleCallback?: (handle: number) => void;
+    };
+    const win = window as unknown as IdleWin;
+    const usesIdle = typeof win.requestIdleCallback === "function";
     const idle = (fn: () => void) => {
-      const ric = (window as unknown as { requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number }).requestIdleCallback;
-      if (ric) return ric(fn, { timeout: 1500 });
+      if (usesIdle) return win.requestIdleCallback!(fn, { timeout: 1500 });
       return window.setTimeout(fn, 120);
     };
 
@@ -384,8 +389,13 @@ function ActesApp() {
     handles.push(idle(() => step(0)));
     return () => {
       cancelled = true;
-      for (const handle of handles) window.clearTimeout(handle);
+      // إلغاء دقيق لمهام الخمول حتى لا تتراكم الحسابات مع تنقل المستخدم.
+      for (const handle of handles) {
+        if (usesIdle && win.cancelIdleCallback) win.cancelIdleCallback(handle);
+        else window.clearTimeout(handle);
+      }
     };
+
 
   }, [gate, view]);
 
@@ -1441,7 +1451,7 @@ function QuoteWorkspace({ view, session, step, draft, setDraft, onPick, onBack, 
   };
 
   return (
-    <div className="w-full space-y-6 pb-8">
+    <div className="screen-enter w-full space-y-6 pb-8">
       <section className="min-w-0">
         <div className="mb-5 flex items-end justify-between gap-4 border-b border-border pb-3">
           <div className="min-w-0">
@@ -1512,7 +1522,7 @@ function QuoteWorkspace({ view, session, step, draft, setDraft, onPick, onBack, 
                   : step === "pv_loads"
                     ? <HourlyLoadEntry onSubmit={onPick} />
                     : <DataEntry value={draft} onChange={setDraft} prompt={entryPrompt(step, session)} onSubmit={submit} presets={ENTRY_PRESETS[step]} onQuick={onPick} />)}
-                {visibleOptions.length > 0 && <OptionGrid options={visibleOptions} selected={selected} projectCards={isProjectSelection} onSelect={(value) => { setSelected(value); onPick(value); }} />}
+                {visibleOptions.length > 0 && <OptionGrid options={visibleOptions} selected={selected} projectCards={isProjectSelection} onSelect={(value) => { onPick(value); }} />}
               </div>
             )}
               </>
