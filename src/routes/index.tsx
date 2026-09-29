@@ -239,12 +239,8 @@ function ActesApp() {
     });
   }, []);
 
-  // رسالة نجاح الإشعار تختفي تلقائياً بعد ٣ ثوانٍ
-  useEffect(() => {
-    if (notificationStatus !== "sent") return;
-    const timer = window.setTimeout(() => setNotificationStatus(""), 3000);
-    return () => window.clearTimeout(timer);
-  }, [notificationStatus]);
+  // رسالة نجاح الإشعار تبقى ظاهرة حتى يغادر العميل الشاشة (رجوع أو العودة للرئيسية)
+
 
   useEffect(() => {
     if (typeof window === "undefined") return;
