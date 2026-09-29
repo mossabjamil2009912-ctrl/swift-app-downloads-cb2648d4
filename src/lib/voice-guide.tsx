@@ -329,6 +329,25 @@ export function speakScreen(key: string, text: string) {
   } else start();
 }
 
+/**
+ * نطق شاشة يكمل مباشرة بعد الجملة الجارية بدل أن يقطعها.
+ * يُستعمل بعد فيديو المنتج: يواصل الشرح فور انتهاء تعليق الفيديو دون توقف.
+ */
+export function speakScreenAfterCurrent(key: string, text: string) {
+  if (!text) return;
+  setScreenSpeech(text);
+  if (key === lastScreen) return;
+  lastScreen = key;
+  const expected = token;
+  void (async () => {
+    await playbackDone;
+    // إذا بدأ المستخدم نطقاً جديداً في الأثناء، نتخلى عن هذا الدور بهدوء.
+    if (expected !== token) return;
+    lastScreen = "";
+    speakScreen(key, text);
+  })();
+}
+
 export function prepareWelcome() { prepareSpeech(WELCOME[currentLang()], true); }
 /** Speaks the welcome phrase once; retries allowed until playback actually starts. */
 export async function speakWelcome() {
