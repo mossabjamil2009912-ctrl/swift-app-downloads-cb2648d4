@@ -5,9 +5,9 @@ import type { Lang } from "@/lib/i18n";
 export type Script = { ar: string; en: string; zh: string; input?: boolean };
 
 export const WELCOME: Record<Lang, string> = {
-  ar: "أَهْلًا بِكَ فِي أَكْتِسْ لِأَنْظِمَةِ الطَّاقَةِ وَحُلُولِهَا. تَفَضَّلْ بِاخْتِيَارِ الخِدْمَةِ الَّتِي تُرِيدُهَا.",
-  en: "Welcome to ACTES energy systems. Please choose the service you want.",
-  zh: "欢迎使用ACTES能源系统。请选择您想要的服务。",
+  ar: "أَهْلًا بِكَ فِي نِظَامِ أَكْتِسْ لِأَنْظِمَةِ الطَّاقَةِ وَحُلُولِهَا. تَفَضَّلْ بِاخْتِيَارِ الخِدْمَةِ الَّتِي تُرِيدُهَا.",
+  en: "Welcome to the ACTES system for energy systems and solutions. Please choose the service you want.",
+  zh: "欢迎使用ACTES系统，专注能源系统与解决方案。请选择您想要的服务。",
 };
 
 const S = (ar: string, en: string, zh: string, input = false): Script => ({ ar, en, zh, input });
@@ -19,7 +19,6 @@ export const SCRIPTS: Record<string, Script> = {
   menu_sys3: S("حَدِّدْ نَوْعَ نِظَامِ المَشْرُوع: نِظَامٌ سَكَنِيّ، نِظَامٌ تِجَارِيّ، نِظَامٌ صِنَاعِيّ، نِظَامٌ زِرَاعِيّ.", "Choose your project system type: residential system, commercial system, industrial system, or agricultural system.", "请确定项目的系统类型：住宅系统、商业系统、工业系统、农业系统。"),
   main_menu: S("حَدِّدْ نَوْعَ نِظَامِ المَشْرُوع: نِظَامٌ سَكَنِيّ، نِظَامٌ تِجَارِيّ، نِظَامٌ صِنَاعِيّ، نِظَامٌ زِرَاعِيّ.", "Choose your project system type: residential system, commercial system, industrial system, or agricultural system.", "请确定项目的系统类型：住宅系统、商业系统、工业系统、农业系统。"),
 
-  welcome_services: S("الشَّاشَةُ الرَّئِيسِيَّة. اخْتَرْ خِدْمَتَكَ.", "Main screen. Choose the service you need.", "主界面。请选择您需要的服务。"),
 
   // ===== السكني =====
   res_bill: S("المَنْظُومَةُ السَّكَنِيَّة. أَدْخِلْ مُتَوَسِّطَ فَاتُورَتِكَ الشَّهْرِيَّةِ بِالرِّيَالِ اليَمَنِيّ، أَوْ تَصَفَّحِ المَنْظُومَاتِ الجَاهِزَة.", "Residential system. Enter your average monthly bill in Yemeni riyals, or browse the ready systems.", "住宅系统。请输入月均账单金额（也门里亚尔），或浏览现成系统。", true),
