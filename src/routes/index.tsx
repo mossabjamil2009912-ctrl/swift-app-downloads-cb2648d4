@@ -612,6 +612,7 @@ function ActesApp() {
   const reset = useCallback(() => {
     // العودة إلى الرئيسية أو إعادة البدء تُسكت أي نطق جارٍ فوراً.
     stopSpeaking();
+    setNotificationStatus("");
     historyRef.current = [];
     sessionRef.current = {};
     const result = runBot({}, { phone: PHONE, text: "مرحبا", message_id: "web.init", phone_number_id: "actes-web" });
