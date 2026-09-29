@@ -1429,7 +1429,7 @@ function StepProgress({ step, hasQuote }: { step: string; hasQuote: boolean }) {
 }
 
 
-function QuoteWorkspace({ view, session, step, draft, setDraft, onPick, onBack, onRestart, onOpenProduct }: { view: View; session: BotSession; step: string; draft: string; setDraft: (value: string) => void; onPick: (value: string) => void; onBack: () => void; onRestart: () => void; onOpenProduct?: ((id: string) => void) | undefined }) {
+function QuoteWorkspace({ view, session, step, draft, setDraft, onPick, onBack, onRestart, onHome, onOpenProduct }: { view: View; session: BotSession; step: string; draft: string; setDraft: (value: string) => void; onPick: (value: string) => void; onBack: () => void; onRestart: () => void; onHome: () => void; onOpenProduct?: ((id: string) => void) | undefined }) {
   const [selected, setSelected] = useState<string>("");
   // شاشة الدراسة تُعرض وحدها عند طلبها، وزر «العودة لعرض السعر» يعيد عرض الجدول
   const [showStudyOnly, setShowStudyOnly] = useState(false);
