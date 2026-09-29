@@ -26,6 +26,22 @@ const DAYS = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
 
 const PVSYST_VERSION = "PVsyst V8.1.2";
 
+/** مسميات بنود الفواقد بالإنجليزية بنفس نصوص مخطط الفواقد في PVsyst. */
+const LOSS_EN: Record<string, string> = {
+  "فاقد التظليل القريب": "Near Shadings: irradiance loss",
+  "فاقد الغبار والأتربة": "Soiling loss factor",
+  "فاقد زاوية السقوط IAM": "IAM factor on global",
+  "انعكاس الأرض على الوجه الأمامي": "Ground reflection on front side",
+  "فاقد الحرارة": "PV loss due to temperature",
+  "كسب الوجه الخلفي (ثنائي الوجه)": "Global irradiance on rear side (bifacial)",
+  "جودة الوحدات": "Module quality loss",
+  "التدهور الضوئي LID": "LID - Light induced degradation",
+  "عدم تطابق الوحدات": "Module array mismatch loss",
+  "أسلاك التيار المستمر DC": "Ohmic wiring loss",
+  "الإنفرتر وفواقد النظام": "Inverter loss and system unavailability",
+  "دورة الشحن والتفريغ للبطاريات": "Battery storage global loss",
+};
+
 /** شعار PVsyst (لوح شمسي وشمس) بنفس ألوان البرنامج. */
 const PV_MARK = `<svg class="pvmark" viewBox="0 0 120 90" xmlns="http://www.w3.org/2000/svg">
   <circle cx="34" cy="26" r="20" fill="#f5a01e"/>
@@ -140,7 +156,7 @@ export function downloadPvsystReport(study: PvsystStudyResult) {
   const lossRows = study.lossBreakdown
     .map((row) => {
       const p = row.percent * 100;
-      return `<div class="lrow"><span class="larr">${p >= 0 ? "↷" : "↴"}</span><span class="lpct">${p > 0 ? "+" : ""}${nf(p, 2)}%</span><span class="ltxt">${esc(row.label)}</span></div>`;
+      return `<div class="lrow"><span class="larr">${p >= 0 ? "↷" : "↴"}</span><span class="lpct">${p > 0 ? "+" : ""}${nf(p, 2)}%</span><span class="ltxt">${esc(LOSS_EN[row.label] || row.label)}</span></div>`;
     })
     .join("");
 
