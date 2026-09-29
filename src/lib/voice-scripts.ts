@@ -16,8 +16,8 @@ export const SCRIPTS: Record<string, Script> = {
   // ===== القوائم =====
   quote_menu: S("طَلَبُ عَرْضِ سِعْر. حَدِّدْ نَوْعَ طَلَبِكَ.", "Price quote. Choose the type of your request.", "申请报价。请选择您的请求类型。"),
   energy_menu: S("حُلُولُ أَنْظِمَةِ الطَّاقَة. يُمْكِنُكَ طَلَبُ دِرَاسَةٍ فَنِّيَّة، أَوِ التَّوَاصُلُ مَعَ فَرِيقِ أَكْتِسْ.", "Energy solutions. Explore the available solutions and choose the one that suits you.", "能源系统方案。了解可用方案，选择适合您的方案。"),
-  menu_sys3: S("حَدِّدْ نَوْعَ نِظَامِ المَشْرُوع: نِظَامٌ سَكَنِيّ، نِظَامٌ تِجَارِيّ، نِظَامٌ صِنَاعِيّ، نِظَامٌ زِرَاعِيّ.", "Choose your project system type: residential system, commercial system, industrial system, or agricultural system.", "请确定项目的系统类型：住宅系统、商业系统、工业系统、农业系统。"),
-  main_menu: S("حَدِّدْ نَوْعَ نِظَامِ المَشْرُوع: نِظَامٌ سَكَنِيّ، نِظَامٌ تِجَارِيّ، نِظَامٌ صِنَاعِيّ، نِظَامٌ زِرَاعِيّ.", "Choose your project system type: residential system, commercial system, industrial system, or agricultural system.", "请确定项目的系统类型：住宅系统、商业系统、工业系统、农业系统。"),
+  menu_sys3: S("حَدِّدْ نَوْعَ نِظَامِ المَشْرُوع: النِّظَامُ السَّكَنِيّ، النِّظَامُ التِّجَارِيّ، النِّظَامُ الصِّنَاعِيّ، النِّظَامُ الزِّرَاعِيّ.", "Choose your project system type: the residential system, the commercial system, the industrial system, or the agricultural system.", "请确定项目的系统类型：住宅系统、商业系统、工业系统、农业系统。"),
+  main_menu: S("حَدِّدْ نَوْعَ نِظَامِ المَشْرُوع: النِّظَامُ السَّكَنِيّ، النِّظَامُ التِّجَارِيّ، النِّظَامُ الصِّنَاعِيّ، النِّظَامُ الزِّرَاعِيّ.", "Choose your project system type: the residential system, the commercial system, the industrial system, or the agricultural system.", "请确定项目的系统类型：住宅系统、商业系统、工业系统、农业系统。"),
 
 
   // ===== السكني =====
