@@ -354,7 +354,13 @@ function ProductDetail({ product, onOpen, onBack, backLabel }: { product: Produc
 
           <span className="text-[11px] font-black text-skyline">{product.brand}</span>
         </div>
-        <ProductVideoPlayer key={product.id} video={video} title={`${product.name} — ${product.model}`} onFinish={() => setReelDone(true)} />
+        <ProductVideoPlayer
+          key={product.id}
+          video={video}
+          title={`${product.name} — ${product.model}`}
+          narration={videoIntroNarration(product, video)}
+          onFinish={() => setReelDone(true)}
+        />
       </div>
     );
   }
