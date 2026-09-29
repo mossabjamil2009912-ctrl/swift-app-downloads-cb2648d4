@@ -174,6 +174,12 @@ const STEP_LABELS: Record<string, string> = {
   item_menu: "قائمة المعدات",
   item_pick: "اختيار المعدات",
   item_qty: "الكمية المطلوبة",
+  sup_name: "الدعم الفني",
+  sup_city_gov: "موقع الخدمة",
+  sup_city_dist: "موقع الخدمة",
+  sup_city: "موقع الخدمة",
+  sup_device: "الجهاز أو النظام",
+  sup_problem: "وصف المشكلة",
 };
 
 const BACK_OPTION_TITLES = new Set(["العودة خطوة", "العودة للبداية", "العودة إلى البداية"]);
@@ -1400,6 +1406,31 @@ function stageIndex(step: string, hasQuote: boolean): number {
   return 1;
 }
 
+// مراحل مسار الدعم الفني — مؤشر مستقل عن مسار عرض السعر
+const SUPPORT_STAGES = ["بيانات العميل", "الموقع", "الجهاز", "المشكلة"];
+
+function SupportProgress({ step }: { step: string }) {
+  const current = step === "sup_name" ? 0 : step.startsWith("sup_city") ? 1 : step === "sup_device" ? 2 : 3;
+  return (
+    <div className="flex flex-wrap items-center gap-1.5">
+      {SUPPORT_STAGES.map((stage, index) => {
+        const done = index < current;
+        const active = index === current;
+        return (
+          <span key={stage} className="flex items-center gap-1.5">
+            <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[10px] font-black transition lg:text-[11px] ${active ? "bg-skyline text-skyline-foreground shadow-sm" : done ? "bg-skyline/10 text-skyline" : "bg-muted text-muted-foreground"}`}>
+              {done ? <Check className="size-3" /> : <span className="grid size-3.5 place-items-center rounded-full bg-current/20 text-[8px]">{index + 1}</span>}
+              {stage}
+            </span>
+            {index < SUPPORT_STAGES.length - 1 && <span className={`h-px w-3 ${done ? "bg-skyline/50" : "bg-border"}`} />}
+          </span>
+        );
+      })}
+    </div>
+  );
+}
+
+
 function StepProgress({ step, hasQuote }: { step: string; hasQuote: boolean }) {
   const current = stageIndex(step, hasQuote);
   return (
@@ -1444,6 +1475,10 @@ function QuoteWorkspace({ view, session, step, draft, setDraft, onPick, onBack, 
     : view.quote ? "عرض سعر رسمي" : hasOutputs ? view.heading : STEP_LABELS[step] || view.heading;
   const visibleOptions = useMemo(() => view.options.filter((option) => !BACK_OPTION_TITLES.has(option.title.trim())), [view.options]);
   const isProjectSelection = step === "menu_sys3";
+  // شاشة حلول الطاقة: بطاقتان عريضتان بدل زرين صغيرين
+  const isEnergyMenu = step === "energy_menu";
+  // مسار الدعم الفني: مؤشر مراحل خاص به بدل مراحل عرض السعر
+  const isSupportPath = step.startsWith("sup_");
   // شاشة عرض السعر الرسمي: أربعة أزرار مباشرة بألوان مميزة لكل خدمة
   const isQuoteActions = Boolean(view.quote) && (step === "qnext_ask" || step === "com_quote_ask" || step === "agr_quote_ask" || (studyFresh && !showStudyOnly));
   const showEntry = step !== "done" && !view.quote && !isProjectSelection && (step in ENTRY_PROMPTS || (view.needsInput && visibleOptions.length === 0));
@@ -1459,7 +1494,8 @@ function QuoteWorkspace({ view, session, step, draft, setDraft, onPick, onBack, 
       <section className="min-w-0">
         <div className="mb-5 flex items-end justify-between gap-4 border-b border-border pb-3">
           <div className="min-w-0">
-            <StepProgress step={step} hasQuote={Boolean(view.quote)} />
+            {!isEnergyMenu && !isSupportPath && <StepProgress step={step} hasQuote={Boolean(view.quote)} />}
+            {isSupportPath && <SupportProgress step={step} />}
             <h1 className="mt-2 text-xl font-black sm:text-2xl">{title}</h1>
             <span className="mt-2 block h-1 w-10 rounded-full bg-brand" />
           </div>
@@ -1532,7 +1568,7 @@ function QuoteWorkspace({ view, session, step, draft, setDraft, onPick, onBack, 
                   : step === "pv_loads"
                     ? <HourlyLoadEntry onSubmit={onPick} />
                     : <DataEntry value={draft} onChange={setDraft} prompt={entryPrompt(step, session)} onSubmit={submit} presets={ENTRY_PRESETS[step]} onQuick={onPick} />)}
-                {visibleOptions.length > 0 && <OptionGrid options={visibleOptions} selected={selected} projectCards={isProjectSelection} onSelect={(value) => { onPick(value); }} />}
+                {visibleOptions.length > 0 && <OptionGrid options={visibleOptions} selected={selected} projectCards={isProjectSelection} energyCards={isEnergyMenu} onSelect={(value) => { onPick(value); }} />}
               </div>
             )}
 
@@ -1605,9 +1641,40 @@ function itemSpec(text: string): string {
   return "";
 }
 
-function OptionGrid({ options, selected, projectCards = false, onSelect }: { options: View["options"]; selected: string; projectCards?: boolean; onSelect: (value: string) => void }) {
+function OptionGrid({ options, selected, projectCards = false, energyCards = false, onSelect }: { options: View["options"]; selected: string; projectCards?: boolean; energyCards?: boolean; onSelect: (value: string) => void }) {
 
-  const asActions = options.length <= 2 && options.every((option) => !option.description);
+  const asActions = !energyCards && options.length <= 2 && options.every((option) => !option.description);
+
+  // شاشة حلول الطاقة: بطاقتان عريضتان واضحتان تملآن الشاشة
+  if (energyCards) {
+    const energyVisual = (title: string) =>
+      /pvsyst|دراسة/i.test(title)
+        ? { icon: LineChart, subtitle: "محاكاة دقيقة لإنتاجية المنظومة وكفاءتها على مدار العام، مع تقرير أداء مفصّل.", action: "ابدأ الدراسة", tone: "bg-brand text-brand-foreground" }
+        : { icon: Headphones, subtitle: "تواصل مع مهندسي أكتس لطلب استشارة فنية أو معاينة ميدانية لموقعك.", action: "تواصل مع الفريق", tone: "bg-skyline text-skyline-foreground" };
+    return (
+      <div className="stagger-in grid gap-3 sm:grid-cols-2">
+        {options.map((option, index) => {
+          const visual = energyVisual(option.title);
+          const Icon = visual.icon;
+          return (
+            <button
+              key={`${option.id}-${index}`}
+              type="button"
+              onClick={() => onSelect(option.id)}
+              className="group flex h-full flex-col items-start gap-3 rounded-xl border border-border bg-card p-5 text-right shadow-sm transition hover:-translate-y-0.5 hover:border-brand hover:shadow-lg"
+            >
+              <span className={`grid size-12 shrink-0 place-items-center rounded-full ${visual.tone}`}><Icon className="size-6" /></span>
+              <strong className="text-base font-black">{option.title}</strong>
+              <small className="text-xs font-semibold leading-5 text-muted-foreground">{visual.subtitle}</small>
+              <span className="mt-auto inline-flex items-center gap-1.5 pt-2 text-xs font-black text-brand">
+                {visual.action} <ArrowLeft className="size-4 transition group-hover:-translate-x-0.5" />
+              </span>
+            </button>
+          );
+        })}
+      </div>
+    );
+  }
 
   if (asActions) {
     return (
@@ -1756,6 +1823,20 @@ const ENTRY_PRESETS: Record<string, { label: string; value: string }[]> = {
     { label: "٤", value: "4" },
     { label: "٨", value: "8" },
   ],
+  sup_device: [
+    { label: "إنفرتر هجين", value: "إنفرتر هجين" },
+    { label: "بطارية ليثيوم", value: "بطارية ليثيوم" },
+    { label: "ألواح شمسية", value: "ألواح شمسية" },
+    { label: "لوحة تحكم وحماية", value: "لوحة تحكم وحماية" },
+    { label: "منظومة كاملة", value: "منظومة كاملة" },
+  ],
+  sup_problem: [
+    { label: "توقف مفاجئ", value: "المنظومة تتوقف عن العمل بشكل مفاجئ" },
+    { label: "كود خطأ على الشاشة", value: "يظهر كود خطأ على شاشة الجهاز" },
+    { label: "تفريغ سريع للبطارية", value: "البطارية تفرغ بسرعة غير طبيعية" },
+    { label: "ضعف الإنتاج", value: "ضعف في إنتاج الطاقة من الألواح" },
+    { label: "صيانة دورية", value: "طلب فحص وصيانة دورية للمنظومة" },
+  ],
 };
 
 const ENTRY_PROMPTS: Record<string, EntryPrompt> = {
@@ -1793,6 +1874,9 @@ const ENTRY_PROMPTS: Record<string, EntryPrompt> = {
   buy_location: { label: "الموقع", hint: "اكتب موقعك بالتفصيل لتسليم المنظومة", placeholder: "المدينة والحي", cta: "متابعة" },
   item_qty: { label: "الكمية المطلوبة", hint: "ادخل الكمية التي ترغب بشرائها", placeholder: "مثال: 4", cta: "متابعة", numeric: true },
   item_name: { label: "اسم العميل", hint: "اكتب الاسم الذي سيعتمد في عرض السعر الرسمي", placeholder: "أكتب الاسم هنا", cta: "متابعة" },
+  sup_name: { label: "اسم العميل", hint: "اكتب اسمك ليتواصل معك فريق الدعم الفني", placeholder: "الاسم الكامل", cta: "متابعة" },
+  sup_device: { label: "الجهاز أو النظام", hint: "اختر الجهاز من الخيارات السريعة أو اكتب اسمه وموديله", placeholder: "مثال: إنفرتر Deye 8kW", cta: "متابعة" },
+  sup_problem: { label: "وصف المشكلة", hint: "اختر وصفاً سريعاً أو اشرح المشكلة بالتفصيل", placeholder: "اشرح ما يحدث بالضبط", cta: "إرسال الطلب" },
 
 };
 
