@@ -57,7 +57,7 @@ export function downloadPvsystReport(study: PvsystStudyResult) {
   if (typeof window === "undefined") return;
   const s = study.system;
   const origin = window.location.origin;
-  const logo = `${origin}/brand/actes-logo.png`;
+  const logo = `${origin}${actesLogoPlain.url}`;
 
   /** اسم المشروع = اسم العميل */
   const project = study.customer || study.reference || "ACTES Project";

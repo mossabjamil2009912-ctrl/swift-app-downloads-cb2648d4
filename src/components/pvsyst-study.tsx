@@ -149,7 +149,7 @@ export default function PvsystStudy({ study, actions }: Props) {
               {s.kwp ? ` — Variant: ${nf(s.kwp, 0)} kWp` : ""}
             </p>
           </div>
-          <img src="/brand/actes-logo.png" alt="ACTES" className="h-8 w-auto shrink-0 object-contain" />
+          <img src={actesLogoPlain.url} alt="ACTES" className="h-9 w-auto shrink-0 object-contain" />
         </div>
         <div className="flex flex-wrap gap-x-4 gap-y-1 border-t px-3 py-1.5 text-[9.5px] text-neutral-600" dir="ltr" style={{ borderColor: C.grid }}>
           <span>Date: {dstr}</span>
