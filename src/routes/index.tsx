@@ -1613,9 +1613,40 @@ function itemSpec(text: string): string {
   return "";
 }
 
-function OptionGrid({ options, selected, projectCards = false, onSelect }: { options: View["options"]; selected: string; projectCards?: boolean; onSelect: (value: string) => void }) {
+function OptionGrid({ options, selected, projectCards = false, energyCards = false, onSelect }: { options: View["options"]; selected: string; projectCards?: boolean; energyCards?: boolean; onSelect: (value: string) => void }) {
 
-  const asActions = options.length <= 2 && options.every((option) => !option.description);
+  const asActions = !energyCards && options.length <= 2 && options.every((option) => !option.description);
+
+  // شاشة حلول الطاقة: بطاقتان عريضتان واضحتان تملآن الشاشة
+  if (energyCards) {
+    const energyVisual = (title: string) =>
+      /pvsyst|دراسة/i.test(title)
+        ? { icon: LineChart, subtitle: "محاكاة دقيقة لإنتاجية المنظومة وكفاءتها على مدار العام، مع تقرير أداء مفصّل.", action: "ابدأ الدراسة", tone: "bg-brand text-brand-foreground" }
+        : { icon: Headphones, subtitle: "تواصل مع مهندسي أكتس لطلب استشارة فنية أو معاينة ميدانية لموقعك.", action: "تواصل مع الفريق", tone: "bg-skyline text-skyline-foreground" };
+    return (
+      <div className="stagger-in grid gap-3 sm:grid-cols-2">
+        {options.map((option, index) => {
+          const visual = energyVisual(option.title);
+          const Icon = visual.icon;
+          return (
+            <button
+              key={`${option.id}-${index}`}
+              type="button"
+              onClick={() => onSelect(option.id)}
+              className="group flex h-full flex-col items-start gap-3 rounded-xl border border-border bg-card p-5 text-right shadow-sm transition hover:-translate-y-0.5 hover:border-brand hover:shadow-lg"
+            >
+              <span className={`grid size-12 shrink-0 place-items-center rounded-full ${visual.tone}`}><Icon className="size-6" /></span>
+              <strong className="text-base font-black">{option.title}</strong>
+              <small className="text-xs font-semibold leading-5 text-muted-foreground">{visual.subtitle}</small>
+              <span className="mt-auto inline-flex items-center gap-1.5 pt-2 text-xs font-black text-brand">
+                {visual.action} <ArrowLeft className="size-4 transition group-hover:-translate-x-0.5" />
+              </span>
+            </button>
+          );
+        })}
+      </div>
+    );
+  }
 
   if (asActions) {
     return (
