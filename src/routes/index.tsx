@@ -1383,7 +1383,7 @@ function ServiceCard({ image, icon, title, description, action, tone, onClick }:
   const btn = tone === "skyline" ? "bg-navy-soft text-navy" : circle;
   return (
     <button type="button" onClick={onClick} aria-label={title} className="group flex flex-col overflow-hidden rounded-xl border border-border bg-card text-right shadow-sm transition hover:shadow-md">
-      <span data-photo-frame className="block aspect-[16/6] w-full overflow-hidden bg-muted lg:aspect-[16/7]"><img data-photo src={image} alt={title} loading="eager" decoding="async" width={1280} height={560} className="size-full object-cover transition duration-500 group-hover:scale-[1.03]" /></span>
+      <span data-photo-frame className="block aspect-[16/9] w-full overflow-hidden bg-muted"><img data-photo src={image} alt={title} loading="eager" decoding="async" width={1280} height={720} className="size-full object-cover transition duration-500 group-hover:scale-[1.03]" /></span>
       <span className="relative flex flex-1 flex-col px-2 pb-2 pt-4 text-center lg:px-3 lg:pb-2.5 lg:pt-5">
         <span className={`absolute -top-3 right-1/2 grid size-6 translate-x-1/2 place-items-center rounded-full border-2 border-card shadow-md lg:size-8 ${circle} [&_svg]:size-3 lg:[&_svg]:size-4`}>{icon}</span>
         <span className="text-[11px] font-black leading-tight text-navy lg:text-[15px]">{title}</span>
