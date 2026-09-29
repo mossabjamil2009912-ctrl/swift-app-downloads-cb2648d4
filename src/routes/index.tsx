@@ -1467,7 +1467,8 @@ function QuoteWorkspace({ view, session, step, draft, setDraft, onPick, onBack, 
       <section className="min-w-0">
         <div className="mb-5 flex items-end justify-between gap-4 border-b border-border pb-3">
           <div className="min-w-0">
-            <StepProgress step={step} hasQuote={Boolean(view.quote)} />
+            {!isEnergyMenu && !isSupportPath && <StepProgress step={step} hasQuote={Boolean(view.quote)} />}
+            {isSupportPath && <SupportProgress step={step} />}
             <h1 className="mt-2 text-xl font-black sm:text-2xl">{title}</h1>
             <span className="mt-2 block h-1 w-10 rounded-full bg-brand" />
           </div>
