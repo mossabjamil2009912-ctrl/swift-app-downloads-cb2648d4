@@ -1,9 +1,6 @@
 // صور حقيقية لأصناف «طلب صنف محدد» — مصدر كل صورة هو صور الكتالوج الرسمية المستخدمة في «تعرف على منتجاتنا».
-// لا تُضاف صورة لصنف إلا إذا كانت صورة الموديل نفسه موجودة فعلاً؛ الأصناف بدون صورة معتمدة تبقى بأيقونة.
-import p2 from "@/assets/products/p2.webp";
+// لا تُضاف صورة إلا لصنف يطابق موديلاً موثقاً في الكتالوج؛ لا صور للقوائم/الفئات ولا صور تقريبية.
 import p3 from "@/assets/products/p3.webp";
-import p4 from "@/assets/products/p4.webp";
-import p7 from "@/assets/products/p7.webp";
 import p8 from "@/assets/products/p8.webp";
 import p9 from "@/assets/products/p9.webp";
 import p11 from "@/assets/products/p11.webp";
@@ -13,16 +10,9 @@ import p15 from "@/assets/products/p15.webp";
 import p16 from "@/assets/products/p16.webp";
 import p18 from "@/assets/products/p18.webp";
 import p19 from "@/assets/products/p19.webp";
+import p2 from "@/assets/products/p2.webp";
 import lithium12v314ah from "@/assets/products/lithium-12v-314ah.png.asset.json";
-import cubeM5a from "@/assets/products/pylontech-powercube-m5a.png.asset.json";
-
-/** صورة كل قسم في شاشة «طلب صنف محدد». */
-export const ITEM_CATEGORY_IMAGES: Record<string, string> = {
-  "ألواح شمسية": p8,
-  إنفرترات: p11,
-  بطاريات: p2,
-  "كبائن وراكات": p7,
-};
+import fidus16 from "@/assets/products/pylontech-fidus-battery-plus.png";
 
 /** صورة كل صنف، بحسب اسمه كما يظهر في القائمة (بدون كود الموديل بين قوسين). */
 const ITEM_IMAGES: Record<string, string> = {
@@ -42,12 +32,9 @@ const ITEM_IMAGES: Record<string, string> = {
   "بطارية ليثيوم 1.28 كيلو": p2,
   "بطارية ليثيوم 2.56 كيلو": p3,
   "بطارية ليثيوم 4 كيلو": lithium12v314ah.url,
-  "بطارية ليثيوم 5.12 كيلو": cubeM5a.url,
-  "بطارية ليثيوم 16 كيلو": p4,
-
-  "راك بطارية بايلونتك 104 كيلو وات ساعة 6000 دورة": p7,
-  "راك بطارية بايلونتك 61.5 كيلو وات ساعة 6000 دورة": p7,
+  "بطارية ليثيوم 16 كيلو": fidus16,
 };
+
 
 const TASHKEEL = /[\u064B-\u0652]/g;
 
@@ -59,9 +46,8 @@ function normalize(text: string): string {
     .trim();
 }
 
-/** صورة الصنف إن وُجدت صورة حقيقية معتمدة له، وإلا undefined. */
+/** صورة الصنف إن وُجدت صورة حقيقية معتمدة له، وإلا undefined (لا صور للقوائم/الفئات). */
 export function itemImage(title: string): string | undefined {
-  const key = normalize(title);
-  if (ITEM_IMAGES[key]) return ITEM_IMAGES[key];
-  return ITEM_CATEGORY_IMAGES[key];
+  return ITEM_IMAGES[normalize(title)];
 }
+

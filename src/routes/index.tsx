@@ -1715,7 +1715,7 @@ function OptionGrid({ options, selected, projectCards = false, energyCards = fal
   // شاشات طلب صنف محدد: بطاقة لكل صنف بصورته الحقيقية إن وُجدت
   if (itemCards) {
     return (
-      <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 xl:grid-cols-4">
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 xl:grid-cols-4">
         {options.map((option, index) => {
           const active = selected === option.id;
           const image = itemImage(option.title);
@@ -1729,14 +1729,11 @@ function OptionGrid({ options, selected, projectCards = false, energyCards = fal
               className={`group flex h-full flex-col overflow-hidden rounded-xl border text-right transition-[border-color,box-shadow] duration-150 hover:border-brand/60 hover:shadow-md ${active ? "border-brand bg-brand/5 shadow-md" : "border-border bg-card shadow-sm"}`}
             >
               {image ? (
-                <span className="block aspect-[1.5/1] w-full overflow-hidden border-b border-border bg-muted">
-                  <img src={image} alt="" loading="eager" decoding="async" className="size-full object-contain p-1.5" />
+                <span className="block h-14 w-full overflow-hidden border-b border-border bg-muted sm:h-16">
+                  <img src={image} alt="" loading="lazy" decoding="async" className="size-full object-contain p-1" />
                 </span>
-              ) : (
-                <span className="grid aspect-[1.5/1] w-full place-items-center border-b border-border bg-secondary text-skyline">
-                  <Package className="size-7" />
-                </span>
-              )}
+              ) : null}
+
               <span className="flex flex-1 flex-col gap-1.5 p-2.5">
                 <span className="block text-[12.5px] font-black leading-5">{option.title}</span>
                 {spec && <span className="inline-flex w-fit items-center rounded-md bg-skyline/10 px-1.5 py-0.5 text-[10.5px] font-black text-skyline" dir="ltr">{spec}</span>}
