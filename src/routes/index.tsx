@@ -1813,6 +1813,9 @@ const ENTRY_PROMPTS: Record<string, EntryPrompt> = {
   buy_location: { label: "الموقع", hint: "اكتب موقعك بالتفصيل لتسليم المنظومة", placeholder: "المدينة والحي", cta: "متابعة" },
   item_qty: { label: "الكمية المطلوبة", hint: "ادخل الكمية التي ترغب بشرائها", placeholder: "مثال: 4", cta: "متابعة", numeric: true },
   item_name: { label: "اسم العميل", hint: "اكتب الاسم الذي سيعتمد في عرض السعر الرسمي", placeholder: "أكتب الاسم هنا", cta: "متابعة" },
+  sup_name: { label: "اسم العميل", hint: "اكتب اسمك ليتواصل معك فريق الدعم الفني", placeholder: "الاسم الكامل", cta: "متابعة" },
+  sup_device: { label: "الجهاز أو النظام", hint: "اختر الجهاز من الخيارات السريعة أو اكتب اسمه وموديله", placeholder: "مثال: إنفرتر Deye 8kW", cta: "متابعة" },
+  sup_problem: { label: "وصف المشكلة", hint: "اختر وصفاً سريعاً أو اشرح المشكلة بالتفصيل", placeholder: "اشرح ما يحدث بالضبط", cta: "إرسال الطلب" },
 
 };
 
