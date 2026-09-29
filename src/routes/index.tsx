@@ -76,6 +76,8 @@ import actesMark from "@/assets/actes-a-mark.webp";
 import actesWordmark from "@/assets/actes-logo-full.webp";
 
 import { findCatalogProductForSpec } from "@/lib/products-data";
+import { itemImage } from "@/lib/item-images";
+
 import { runBot, type BotResult, type BotSession } from "@/lib/bot-engine.js";
 import { buildView, formatSystemName, money, type View } from "@/lib/present";
 import { CERTIFICATES, CERTIFICATES_TITLE } from "@/lib/warranty";
@@ -1477,6 +1479,9 @@ function QuoteWorkspace({ view, session, step, draft, setDraft, onPick, onBack, 
   const isProjectSelection = step === "menu_sys3";
   // شاشة حلول الطاقة: بطاقتان عريضتان بدل زرين صغيرين
   const isEnergyMenu = step === "energy_menu";
+  // شاشات طلب صنف محدد: بطاقات بصور حقيقية للأصناف
+  const isItemCards = step === "item_menu" || step === "item_pick";
+
   // مسار الدعم الفني: مؤشر مراحل خاص به بدل مراحل عرض السعر
   const isSupportPath = step.startsWith("sup_");
   // شاشة عرض السعر الرسمي: أربعة أزرار مباشرة بألوان مميزة لكل خدمة
@@ -1568,7 +1573,7 @@ function QuoteWorkspace({ view, session, step, draft, setDraft, onPick, onBack, 
                   : step === "pv_loads"
                     ? <HourlyLoadEntry onSubmit={onPick} />
                     : <DataEntry value={draft} onChange={setDraft} prompt={entryPrompt(step, session)} onSubmit={submit} presets={ENTRY_PRESETS[step]} onQuick={onPick} />)}
-                {visibleOptions.length > 0 && <OptionGrid options={visibleOptions} selected={selected} projectCards={isProjectSelection} energyCards={isEnergyMenu} onSelect={(value) => { onPick(value); }} />}
+                {visibleOptions.length > 0 && <OptionGrid options={visibleOptions} selected={selected} projectCards={isProjectSelection} energyCards={isEnergyMenu} itemCards={isItemCards} onSelect={(value) => { onPick(value); }} />}
               </div>
             )}
 
@@ -1641,9 +1646,10 @@ function itemSpec(text: string): string {
   return "";
 }
 
-function OptionGrid({ options, selected, projectCards = false, energyCards = false, onSelect }: { options: View["options"]; selected: string; projectCards?: boolean; energyCards?: boolean; onSelect: (value: string) => void }) {
+function OptionGrid({ options, selected, projectCards = false, energyCards = false, itemCards = false, onSelect }: { options: View["options"]; selected: string; projectCards?: boolean; energyCards?: boolean; itemCards?: boolean; onSelect: (value: string) => void }) {
 
-  const asActions = !energyCards && options.length <= 2 && options.every((option) => !option.description);
+  const asActions = !energyCards && !itemCards && options.length <= 2 && options.every((option) => !option.description);
+
 
   // شاشة حلول الطاقة: بطاقتان عريضتان واضحتان تملآن الشاشة
   if (energyCards) {
@@ -1702,7 +1708,50 @@ function OptionGrid({ options, selected, projectCards = false, energyCards = fal
     );
   }
 
+  // شاشات طلب صنف محدد: بطاقة لكل صنف بصورته الحقيقية إن وُجدت
+  if (itemCards) {
+    return (
+      <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 xl:grid-cols-4">
+        {options.map((option, index) => {
+          const active = selected === option.id;
+          const image = itemImage(option.title);
+          const spec = itemSpec(`${option.title} ${option.description || ""}`);
+          const priceMatch = option.description?.match(/^([\d.,]+\s*\S+\s*\/\s*\S+)/);
+          return (
+            <button
+              key={`${option.id}-${index}`}
+              type="button"
+              onClick={() => onSelect(option.id)}
+              className={`group flex h-full flex-col overflow-hidden rounded-xl border text-right transition-[border-color,box-shadow] duration-150 hover:border-brand/60 hover:shadow-md ${active ? "border-brand bg-brand/5 shadow-md" : "border-border bg-card shadow-sm"}`}
+            >
+              {image ? (
+                <span className="block aspect-[1.5/1] w-full overflow-hidden border-b border-border bg-muted">
+                  <img src={image} alt="" loading="eager" decoding="async" className="size-full object-contain p-1.5" />
+                </span>
+              ) : (
+                <span className="grid aspect-[1.5/1] w-full place-items-center border-b border-border bg-secondary text-skyline">
+                  <Package className="size-7" />
+                </span>
+              )}
+              <span className="flex flex-1 flex-col gap-1.5 p-2.5">
+                <span className="block text-[12.5px] font-black leading-5">{option.title}</span>
+                {spec && <span className="inline-flex w-fit items-center rounded-md bg-skyline/10 px-1.5 py-0.5 text-[10.5px] font-black text-skyline" dir="ltr">{spec}</span>}
+                {priceMatch && (
+                  <span className="mt-auto inline-flex w-fit items-center gap-1 rounded-full bg-energy/10 px-2 py-0.5 text-[10px] font-black text-energy" dir="ltr">
+                    <CircleDollarSign className="size-3" />
+                    {(priceMatch[1] ?? "").trim()}
+                  </span>
+                )}
+              </span>
+            </button>
+          );
+        })}
+      </div>
+    );
+  }
+
   if (projectCards) {
+
     const projectVisual = (title: string) => {
       if (/سكن/.test(title)) return { image: residentialImage, icon: House, subtitle: "للمنازل والفلل" };
       if (/تجار/.test(title)) return { image: commercialImage, icon: Building2, subtitle: "للمشاريع التجارية والمنشآت" };
