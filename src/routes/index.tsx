@@ -347,9 +347,14 @@ function ActesApp() {
       return !/قريب(?:اً|ا)?/.test(title);
     });
 
+    type IdleWin = {
+      requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number;
+      cancelIdleCallback?: (handle: number) => void;
+    };
+    const win = window as unknown as IdleWin;
+    const usesIdle = typeof win.requestIdleCallback === "function";
     const idle = (fn: () => void) => {
-      const ric = (window as unknown as { requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number }).requestIdleCallback;
-      if (ric) return ric(fn, { timeout: 1500 });
+      if (usesIdle) return win.requestIdleCallback!(fn, { timeout: 1500 });
       return window.setTimeout(fn, 120);
     };
 
@@ -384,8 +389,13 @@ function ActesApp() {
     handles.push(idle(() => step(0)));
     return () => {
       cancelled = true;
-      for (const handle of handles) window.clearTimeout(handle);
+      // إلغاء دقيق لمهام الخمول حتى لا تتراكم الحسابات مع تنقل المستخدم.
+      for (const handle of handles) {
+        if (usesIdle && win.cancelIdleCallback) win.cancelIdleCallback(handle);
+        else window.clearTimeout(handle);
+      }
     };
+
 
   }, [gate, view]);
 
