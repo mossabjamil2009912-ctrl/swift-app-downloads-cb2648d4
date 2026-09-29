@@ -239,12 +239,8 @@ function ActesApp() {
     });
   }, []);
 
-  // رسالة نجاح الإشعار تختفي تلقائياً بعد ٣ ثوانٍ
-  useEffect(() => {
-    if (notificationStatus !== "sent") return;
-    const timer = window.setTimeout(() => setNotificationStatus(""), 3000);
-    return () => window.clearTimeout(timer);
-  }, [notificationStatus]);
+  // رسالة نجاح الإشعار تبقى ظاهرة حتى يغادر العميل الشاشة (رجوع أو العودة للرئيسية)
+
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -616,6 +612,7 @@ function ActesApp() {
   const reset = useCallback(() => {
     // العودة إلى الرئيسية أو إعادة البدء تُسكت أي نطق جارٍ فوراً.
     stopSpeaking();
+    setNotificationStatus("");
     historyRef.current = [];
     sessionRef.current = {};
     const result = runBot({}, { phone: PHONE, text: "مرحبا", message_id: "web.init", phone_number_id: "actes-web" });
@@ -800,6 +797,7 @@ function ActesApp() {
               onPick={send}
               onBack={() => send("back_step")}
               onRestart={() => send("0")}
+              onHome={() => { setCatalog(null); reset(); }}
               onOpenProduct={(id) => { setCatalog({ productId: id, fromQuote: true }); mainRef.current?.scrollTo({ top: 0 }); }}
             />
 
@@ -1432,7 +1430,7 @@ function StepProgress({ step, hasQuote }: { step: string; hasQuote: boolean }) {
 }
 
 
-function QuoteWorkspace({ view, session, step, draft, setDraft, onPick, onBack, onRestart, onOpenProduct }: { view: View; session: BotSession; step: string; draft: string; setDraft: (value: string) => void; onPick: (value: string) => void; onBack: () => void; onRestart: () => void; onOpenProduct?: ((id: string) => void) | undefined }) {
+function QuoteWorkspace({ view, session, step, draft, setDraft, onPick, onBack, onRestart, onHome, onOpenProduct }: { view: View; session: BotSession; step: string; draft: string; setDraft: (value: string) => void; onPick: (value: string) => void; onBack: () => void; onRestart: () => void; onHome: () => void; onOpenProduct?: ((id: string) => void) | undefined }) {
   const [selected, setSelected] = useState<string>("");
   // شاشة الدراسة تُعرض وحدها عند طلبها، وزر «العودة لعرض السعر» يعيد عرض الجدول
   const [showStudyOnly, setShowStudyOnly] = useState(false);
@@ -1469,12 +1467,18 @@ function QuoteWorkspace({ view, session, step, draft, setDraft, onPick, onBack, 
             <button type="button" onClick={() => { if (studyScreen) { setShowStudyOnly(false); return; } onBack(); }} title="رجوع خطوة" aria-label="رجوع خطوة" className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-3 py-2 text-xs font-bold text-navy shadow-sm transition hover:bg-muted hover:border-brand hover:text-brand lg:text-sm">
               <ArrowRight className="size-4" /> رجوع
             </button>
+            {step === "done" && (
+              <button type="button" onClick={onHome} title="العودة إلى الشاشة الرئيسية" aria-label="العودة إلى الشاشة الرئيسية" className="inline-flex items-center gap-1.5 rounded-full bg-skyline px-3 py-2 text-xs font-bold text-skyline-foreground shadow-sm transition hover:opacity-90 lg:text-sm">
+                <Home className="size-4" /> الشاشة الرئيسية
+              </button>
+            )}
 
             <button type="button" onClick={onRestart} title="العودة للبداية" aria-label="العودة للبداية" className={`size-10 place-items-center rounded-full border border-border bg-card text-skyline transition hover:border-brand hover:text-brand ${view.specs.length > 0 ? "hidden" : "grid"}`}>
               <RotateCcw className="size-5" />
             </button>
           </div>
         </div>
+
         <div className="rounded-lg border border-border bg-card p-4 shadow-sm sm:p-6">
 
             {studyScreen ? (
@@ -1531,6 +1535,15 @@ function QuoteWorkspace({ view, session, step, draft, setDraft, onPick, onBack, 
                 {visibleOptions.length > 0 && <OptionGrid options={visibleOptions} selected={selected} projectCards={isProjectSelection} onSelect={(value) => { onPick(value); }} />}
               </div>
             )}
+
+            {step === "done" && (
+              <div className="mt-6 border-t border-border pt-5">
+                <button type="button" onClick={onHome} className="inline-flex w-full items-center justify-center gap-2 rounded-md bg-skyline px-6 py-3 text-sm font-bold text-skyline-foreground transition hover:opacity-90 sm:w-auto">
+                  <Home className="size-4" /> العودة إلى الشاشة الرئيسية
+                </button>
+              </div>
+            )}
+
               </>
             )}
           </div>
