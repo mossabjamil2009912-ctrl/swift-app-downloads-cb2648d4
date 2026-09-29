@@ -672,7 +672,7 @@ function ActesApp() {
 
   const [settingsOpen, setSettingsOpen] = useState(false);
   // «تعرف على منتجاتنا»: شاشة معلوماتية مستقلة لا تمر بمحرك عروض الأسعار
-  const [catalog, setCatalog] = useState<{ productId: string | null; fromQuote?: boolean } | null>(null);
+  const [catalog, setCatalog] = useState<{ productId: string | null; fromQuote?: boolean | undefined } | null>(null);
   // فتح مباشر لمنتج عبر الرابط/رمز QR: /?product=<id>
   useEffect(() => {
     if (typeof window === "undefined") return;

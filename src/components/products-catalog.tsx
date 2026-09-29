@@ -288,7 +288,7 @@ function ShareSheet({ product, onClose }: { product: Product; onClose: () => voi
   );
 }
 
-function ProductDetail({ product, onOpen, onBack, backLabel }: { product: Product; onOpen: (id: string) => void; onBack: () => void; backLabel?: string }) {
+function ProductDetail({ product, onOpen, onBack, backLabel }: { product: Product; onOpen: (id: string) => void; onBack: () => void; backLabel?: string | undefined }) {
   // فيديو تعريفي حقيقي داخل معرض ACTES يبدأ أولاً (إن توفر لهذا الموديل)، ثم تظهر تفاصيل المنتج.
   const video = useMemo(() => getProductVideo(product.id), [product.id]);
   const [reelDone, setReelDone] = useState(!video);
