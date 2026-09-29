@@ -1,11 +1,11 @@
 {
-  "version": 1,
   "asset_id": "767adab8-0e3c-4067-9802-76aea251f5ad",
-  "project_id": "fca3aa81-32e2-4534-848c-40ae8e53d1b5",
-  "url": "/__l5e/assets-v1/767adab8-0e3c-4067-9802-76aea251f5ad/actes-logo-plain.png",
-  "r2_key": "a/v1/fca3aa81-32e2-4534-848c-40ae8e53d1b5/767adab8-0e3c-4067-9802-76aea251f5ad/actes-logo-plain.png",
-  "original_filename": "actes-logo-plain.png",
-  "size": 105636,
   "content_type": "image/png",
-  "created_at": "2026-09-29T04:33:48Z"
+  "created_at": "2026-09-29T04:33:48Z",
+  "original_filename": "actes-logo-plain.png",
+  "project_id": "3a339321-7177-4489-bf9f-a9f1851360ee",
+  "r2_key": "a/v1/3a339321-7177-4489-bf9f-a9f1851360ee/767adab8-0e3c-4067-9802-76aea251f5ad/actes-logo-plain.png",
+  "size": 105636,
+  "url": "/__l5e/assets-v1/767adab8-0e3c-4067-9802-76aea251f5ad/actes-logo-plain.png",
+  "version": 1
 }
