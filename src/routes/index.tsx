@@ -160,7 +160,7 @@ const STEP_LABELS: Record<string, string> = {
   ind_shift: "مواعيد الورديات",
   ind_load_src: "بيانات الأحمال",
   ind_load_file: "جدول الأحمال",
-  ind_total_kw: "إجمالي الأحمال",
+  ind_total_kw: "حمل المصنع",
   ind_max_mach: "أكبر ماكينة",
   ind_motors: "تيار الإقلاع",
   ind_motor_kw: "قدرة المحرك",
@@ -1850,23 +1850,18 @@ const ENTRY_PRESETS: Record<string, { label: string; value: string }[]> = {
     { label: "15 حصان", value: "15" },
     { label: "25 حصان", value: "25" },
   ],
-  agr_well_depth: [
-    { label: "50 م", value: "50" },
-    { label: "100 م", value: "100" },
-    { label: "150 م", value: "150" },
-    { label: "200 م", value: "200" },
-  ],
-  agr_hours: [
-    { label: "4 ساعات", value: "4" },
-    { label: "6 ساعات", value: "6" },
-    { label: "8 ساعات", value: "8" },
-    { label: "10 ساعات", value: "10" },
-  ],
   agr_pumps: [
     { label: "مضخة", value: "1" },
     { label: "مضختان", value: "2" },
     { label: "3 مضخات", value: "3" },
   ],
+  ind_total_kw: [
+    { label: "50 كيلووات", value: "50" },
+    { label: "100 كيلووات", value: "100" },
+    { label: "150 كيلووات", value: "150" },
+    { label: "250 كيلووات", value: "250" },
+  ],
+
   item_qty: [
     { label: "1", value: "1" },
     { label: "2", value: "2" },
@@ -1908,7 +1903,7 @@ const ENTRY_PROMPTS: Record<string, EntryPrompt> = {
   pv_loads: { label: "الأحمال الكهربائية", hint: "ادخل إجمالي الأحمال أو الاستهلاك اليومي للمشروع", placeholder: "اكتب الرقم هنا", cta: "متابعة", numeric: true },
   ind_name: { label: "اسم المشروع الصناعي", hint: "اكتب اسم المصنع أو الجهة المالكة للمشروع", placeholder: "مثال: مصنع الرواد للصناعات الغذائية", cta: "متابعة" },
   ind_shift: { label: "وقت الوردية", hint: "اكتب وقت بداية الوردية ونهايتها", placeholder: "مثال: 08:00 - 16:00", cta: "متابعة" },
-  ind_total_kw: { label: "إجمالي الحمل التشغيلي", hint: "مجموع قدرة الآلات والإنارة والتكييف التي تعمل معاً بالكيلووات", placeholder: "مثال: 120", cta: "متابعة", numeric: true },
+  ind_total_kw: { label: "الحمل بالكيلووات", hint: "اختر قيمة قريبة أو اكتب الرقم الذي تعرفه", placeholder: "مثال: 120", cta: "متابعة", numeric: true },
   ind_max_mach: { label: "أكبر ماكينة منفردة", hint: "قدرة أعلى حمل تشغيلي أو ماكينة منفردة بالكيلووات", placeholder: "مثال: 30", cta: "متابعة", numeric: true },
   ind_motor_kw: { label: "قدرة أكبر محرك", hint: "قدرة المحرك ذي تيار الإقلاع العالي بالكيلووات", placeholder: "مثال: 22", cta: "متابعة", numeric: true },
   ind_gen_kva: { label: "قدرة المولد الحالي", hint: "اكتب قدرة المولد إن وُجد، وإن لم يوجد فاكتب 0", placeholder: "مثال: 250", cta: "متابعة", numeric: true },
