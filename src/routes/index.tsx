@@ -1762,6 +1762,20 @@ const ENTRY_PRESETS: Record<string, { label: string; value: string }[]> = {
     { label: "٤", value: "4" },
     { label: "٨", value: "8" },
   ],
+  sup_device: [
+    { label: "إنفرتر هجين", value: "إنفرتر هجين" },
+    { label: "بطارية ليثيوم", value: "بطارية ليثيوم" },
+    { label: "ألواح شمسية", value: "ألواح شمسية" },
+    { label: "لوحة تحكم وحماية", value: "لوحة تحكم وحماية" },
+    { label: "منظومة كاملة", value: "منظومة كاملة" },
+  ],
+  sup_problem: [
+    { label: "توقف مفاجئ", value: "المنظومة تتوقف عن العمل بشكل مفاجئ" },
+    { label: "كود خطأ على الشاشة", value: "يظهر كود خطأ على شاشة الجهاز" },
+    { label: "تفريغ سريع للبطارية", value: "البطارية تفرغ بسرعة غير طبيعية" },
+    { label: "ضعف الإنتاج", value: "ضعف في إنتاج الطاقة من الألواح" },
+    { label: "صيانة دورية", value: "طلب فحص وصيانة دورية للمنظومة" },
+  ],
 };
 
 const ENTRY_PROMPTS: Record<string, EntryPrompt> = {
