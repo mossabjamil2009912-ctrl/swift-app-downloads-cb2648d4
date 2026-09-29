@@ -1,18 +1,39 @@
 import { useMemo } from "react";
-import { ArrowLeft, Download, LineChart, Network, ShoppingCart, Sun, Zap } from "lucide-react";
+import { ArrowLeft, Download, Network, ShoppingCart } from "lucide-react";
 import { buildPvsystStudy } from "@/lib/pvsyst-engine";
 import { downloadPvsystReport } from "@/lib/pvsyst-pdf";
 import type { View } from "@/lib/present";
 
 const nf = (n: number, d = 0) => n.toLocaleString("en-US", { minimumFractionDigits: d, maximumFractionDigits: d });
 
+const MONTHS_SHORT = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+const DAYS = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+
+/** مسميات بنود الفواقد بنصوص PVsyst الرسمية. */
+const LOSS_EN: Record<string, string> = {
+  "فاقد التظليل القريب": "Near Shadings: irradiance loss",
+  "فاقد الغبار والأتربة": "Soiling loss factor",
+  "فاقد زاوية السقوط IAM": "IAM factor on global",
+  "انعكاس الأرض على الوجه الأمامي": "Ground reflection on front side",
+  "فاقد الحرارة": "PV loss due to temperature",
+  "كسب الوجه الخلفي (ثنائي الوجه)": "Global irradiance on rear side (bifacial)",
+  "جودة الوحدات": "Module quality loss",
+  "التدهور الضوئي LID": "LID - Light induced degradation",
+  "عدم تطابق الوحدات": "Module array mismatch loss",
+  "أسلاك التيار المستمر DC": "Ohmic wiring loss",
+  "الإنفرتر وفواقد النظام": "Inverter loss and system unavailability",
+  "دورة الشحن والتفريغ للبطاريات": "Battery storage global loss",
+};
+
+/** ألوان تقرير PVsyst الرسمية */
+const C = { blue: "#1c3f94", sun: "#f5a01e", violet: "#7b3fa0", red: "#c0392b", grid: "#b9c0cf", head: "#dfe4ee" };
+
 type Props = {
   study: NonNullable<View["study"]>;
-  /** أزرار الشاشة المستقلة للدراسة (تُعرض فقط في الشاشة المستقلة) */
   actions?: { onBuy: () => void; onBackToQuote: () => void; onSld: () => void };
 };
 
-/** شاشة نتائج دراسة PVsyst: ملخص النظام، المؤشرات، الرسم البياني، جدول الإنتاجية، والفواقد. */
+/** شاشة دراسة PVsyst — بنفس تصميم ومحتوى تقرير PVsyst V8.1.2 الرسمي. */
 export default function PvsystStudy({ study, actions }: Props) {
   const result = useMemo(
     () =>
@@ -27,189 +48,328 @@ export default function PvsystStudy({ study, actions }: Props) {
 
   if (!result) return null;
   const s = result.system;
+  const months = result.months;
+  const hasMonths = months.length === 12;
+
+  const project = result.customer || result.reference || "ACTES Project";
+  const sysTitle = s.batteryKwh ? "Grid-Connected System with storage" : "Grid-Connected System";
+  const today = new Date();
+  const dstr = `${String(today.getDate()).padStart(2, "0")}/${String(today.getMonth() + 1).padStart(2, "0")}/${String(today.getFullYear()).slice(2)}`;
+
+  // ==== الإنتاج المعياري kWh/kWp/day ====
+  const norm = hasMonths && s.kwp
+    ? months.map((m, i) => {
+        const d = DAYS[i]!;
+        const kwp = s.kwp!;
+        return {
+          yf: m.energy / kwp / d,
+          ls: Math.max(0, (m.eArray - m.energy) / kwp / d),
+          lc: Math.max(0, (m.irradiation - m.eArray / kwp) / d),
+          pr: m.pr,
+        };
+      })
+    : [];
+  const normTop = norm.length ? Math.ceil(Math.max(...norm.map((n) => n.yf + n.ls + n.lc)) + 1) : 1;
+  const avg = (pick: (n: (typeof norm)[number]) => number) =>
+    norm.length ? norm.reduce((a, n) => a + pick(n), 0) / norm.length : 0;
+
+  const totals = hasMonths
+    ? months.reduce(
+        (a, m) => ({
+          ghi: a.ghi + (m.ghi ?? 0),
+          dhi: a.dhi + (m.dhi ?? 0),
+          inc: a.inc + m.irradiation,
+          eff: a.eff + m.globEff,
+          arr: a.arr + m.eArray,
+          grid: a.grid + m.energy,
+        }),
+        { ghi: 0, dhi: 0, inc: 0, eff: 0, arr: 0, grid: 0 },
+      )
+    : null;
 
   const specs: { label: string; value: string }[] = [];
   const spec = (label: string, value: string | null | undefined) => {
     if (value) specs.push({ label, value });
   };
-  spec("قدرة المنظومة الشمسية", s.kwp ? `${nf(s.kwp, 2)} kWp` : null);
-  spec("عدد الألواح", s.panelQty ? `${nf(s.panelQty)} لوح` : null);
-  spec("قدرة اللوح الواحد", s.panelWp ? `${nf(s.panelWp)} وات` : null);
-  spec("موديل الألواح", s.panelModel);
-  spec("موديل الإنفرتر", s.invModel);
-  spec("عدد الإنفرترات", s.invQty ? `${nf(s.invQty)}` : null);
-  spec("إجمالي قدرة الإنفرترات", s.invTotalKw ? `${nf(s.invTotalKw, 1)} kW` : null);
-  spec("نسبة القدرة Pnom ratio", s.pnomRatio ? `${nf(s.pnomRatio, 2)}` : null);
-  spec("منظومة التخزين", s.batteryModel && s.batteryKwh ? `${s.batteryModel} — ${nf(s.batteryKwh, 2)} kWh` : null);
-  spec("نوع المنظومة", s.sysMode);
-  spec("نوع الطور", s.phase);
-  spec("الموقع", result.city || null);
+  spec("PV Array nominal power", s.kwp ? `${nf(s.kwp, 2)} kWp` : null);
+  spec("Number of PV modules", s.panelQty ? `${nf(s.panelQty)} units` : null);
+  spec("Unit nominal power", s.panelWp ? `${nf(s.panelWp)} Wp` : null);
+  spec("PV module", s.panelModel);
+  spec("Inverter", s.invModel);
+  spec("Number of inverters", s.invQty ? `${nf(s.invQty)}` : null);
+  spec("Total inverter power", s.invTotalKw ? `${nf(s.invTotalKw, 1)} kWac` : null);
+  spec("Pnom ratio (DC:AC)", s.pnomRatio ? `${nf(s.pnomRatio, 2)}` : null);
+  spec("Battery storage", s.batteryModel && s.batteryKwh ? `${s.batteryModel} — ${nf(s.batteryKwh, 2)} kWh` : null);
+  spec("System type", s.sysMode);
+  spec("Grid connection", s.phase);
+  spec("Geographical site", result.city || null);
   spec(
-    "الإحداثيات",
+    "Coordinates",
     s.latitude && s.longitude ? `${nf(s.latitude, 4)}°N , ${nf(s.longitude, 4)}°E` : s.latitude ? `${nf(s.latitude, 2)}°N` : null,
   );
-  spec("الارتفاع عن سطح البحر", s.altitude ? `${nf(s.altitude)} م` : null);
-  spec("زاوية الميل", s.tilt ? `${s.tilt}°` : null);
-  spec("اتجاه الألواح", s.azimuth);
+  spec("Altitude", s.altitude ? `${nf(s.altitude)} m` : null);
+  spec("Tilt / Azimuth", s.tilt ? `${s.tilt}° / ${s.azimuth ?? "0°"}` : null);
 
-  const kpis: { label: string; value: string }[] = [];
-  const kpi = (label: string, value: string | null) => {
-    if (value) kpis.push({ label, value });
+  const kpis: { label: string; sub: string; value: string }[] = [];
+  const kpi = (label: string, sub: string, value: string | null) => {
+    if (value) kpis.push({ label, sub, value });
   };
-  kpi("الإنتاج السنوي", result.annualEnergy ? `${nf(result.annualEnergy)} kWh` : null);
-  kpi("الإنتاج النوعي", result.specificYield ? `${nf(result.specificYield)} kWh/kWp` : null);
-  kpi("معامل الأداء PR", result.annualPr ? `${nf(result.annualPr * 100, 1)}%` : null);
-  kpi("الإشعاع السنوي", result.annualIrradiation ? `${nf(result.annualIrradiation)} kWh/m²` : null);
-  kpi("الطاقة المفقودة", result.losses ? `${nf(result.losses)} kWh` : null);
-  kpi("تغطية الاستهلاك", result.coverage ? `${nf(result.coverage)}%` : null);
+  kpi("Produced Energy", "الإنتاج السنوي", result.annualEnergy ? `${nf(result.annualEnergy)} kWh/year` : null);
+  kpi("Specific production", "الإنتاج النوعي", result.specificYield ? `${nf(result.specificYield)} kWh/kWp/year` : null);
+  kpi("Performance Ratio PR", "معامل الأداء", result.annualPr ? `${nf(result.annualPr * 100, 1)} %` : null);
+  kpi("Global incident irradiation", "الإشعاع السنوي", result.annualIrradiation ? `${nf(result.annualIrradiation)} kWh/m²` : null);
+  kpi("System losses", "إجمالي الفواقد", result.losses ? `${nf(result.losses)} kWh` : null);
+  kpi("Solar fraction", "تغطية الاستهلاك", result.coverage ? `${nf(result.coverage)} %` : null);
 
-  const months = result.months;
-  const maxEnergy = months.length ? Math.max(...months.map((m) => m.energy)) : 0;
-  const minEnergy = months.length ? Math.min(...months.map((m) => m.energy)) : 0;
-  // مقياس يبدأ من أقل شهر لإظهار الفروق الشهرية بوضوح
-  const barHeight = (energy: number) =>
-    maxEnergy <= minEnergy ? 100 : 35 + ((energy - minEnergy) / (maxEnergy - minEnergy)) * 65;
-  const hasGhi = months.some((m) => m.ghi !== null);
+  if (!specs.length && !hasMonths) return null;
 
-  if (!specs.length && !months.length) return null;
+  const th = "border px-1.5 py-1 text-[9px] font-black leading-tight";
+  const td = "border px-1.5 py-[3px] text-center text-[9.5px] tabular-nums";
 
   return (
     <section className={actions ? "" : "mt-3 rounded-lg border border-border bg-card p-3"}>
-      <div className="flex items-center gap-2">
-        <span className="grid size-8 place-items-center rounded-md bg-secondary text-skyline">
-          <LineChart className="size-4" />
-        </span>
-        <div>
-          <h3 className="text-sm font-black">دراسة المحاكاة الشمسية (PVsyst)</h3>
-          <p className="text-[10px] text-muted-foreground">
-            {result.customer ? `Project: ${result.customer}` : "تقرير أداء المنظومة"}
-            {s.kwp ? ` — Variant: ${nf(s.kwp, 0)} kWp` : ""}
-            {result.reference ? ` — رقم الدراسة: ${result.reference}` : ""}
-          </p>
+      {/* ترويسة تقرير PVsyst الرسمية */}
+      <div className="overflow-hidden rounded-md border" style={{ borderColor: C.grid }}>
+        <div className="flex items-center gap-3 px-3 py-2" dir="ltr" style={{ background: C.head }}>
+          <svg viewBox="0 0 120 90" className="h-8 w-11 shrink-0">
+            <circle cx="34" cy="26" r="20" fill={C.sun} />
+            <g transform="skewX(-16) translate(14 30)">
+              <rect x="0" y="0" width="76" height="48" fill={C.blue} />
+              <g stroke="#fff" strokeWidth="2.4">
+                <path d="M19 0V48M38 0V48M57 0V48M0 16H76M0 32H76" />
+              </g>
+            </g>
+          </svg>
+          <div className="min-w-0 flex-1">
+            <p className="text-[11px] font-black" style={{ color: C.blue }}>
+              PVsyst V8.1.2 — Simulation report
+            </p>
+            <p className="truncate text-[10px] font-bold text-neutral-700">
+              {sysTitle} — Project: {project}
+              {s.kwp ? ` — Variant: ${nf(s.kwp, 0)} kWp` : ""}
+            </p>
+          </div>
+          <img src="/brand/actes-logo.png" alt="ACTES" className="h-8 w-auto shrink-0 object-contain" />
+        </div>
+        <div className="flex flex-wrap gap-x-4 gap-y-1 border-t px-3 py-1.5 text-[9.5px] text-neutral-600" dir="ltr" style={{ borderColor: C.grid }}>
+          <span>Date: {dstr}</span>
+          {result.reference && <span>Ref: {result.reference}</span>}
+          {result.city && <span>Site: {result.city}</span>}
         </div>
       </div>
 
+      {/* ملخص المشروع والنظام */}
       {specs.length > 0 && (
         <>
-          <h4 className="mt-4 flex items-center gap-1.5 text-xs font-black text-skyline">
-            <Zap className="size-3.5" /> ملخص النظام
+          <h4 className="mt-4 rounded-t-md px-2 py-1 text-[11px] font-black text-white" style={{ background: C.blue }} dir="ltr">
+            Project and system summary
           </h4>
-          <dl className="mt-2 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+          <dl className="grid gap-px border-x border-b sm:grid-cols-2 lg:grid-cols-3" style={{ borderColor: C.grid, background: C.grid }}>
             {specs.map((row) => (
-              <div key={row.label} className="rounded-md bg-muted/55 px-3 py-2">
-                <dt className="text-[10px] text-muted-foreground">{row.label}</dt>
-                <dd className="mt-1 text-xs font-bold break-words">{row.value}</dd>
+              <div key={row.label} className="bg-card px-2.5 py-1.5" dir="ltr">
+                <dt className="text-[9.5px] text-muted-foreground">{row.label}</dt>
+                <dd className="mt-0.5 text-[11px] font-bold break-words">{row.value}</dd>
               </div>
             ))}
           </dl>
         </>
       )}
 
+      {/* المؤشرات الرئيسية */}
       {kpis.length > 0 && (
         <>
-          <h4 className="mt-4 flex items-center gap-1.5 text-xs font-black text-skyline">
-            <Sun className="size-3.5" /> أهم المؤشرات
+          <h4 className="mt-4 rounded-t-md px-2 py-1 text-[11px] font-black text-white" style={{ background: C.blue }} dir="ltr">
+            Main simulation results
           </h4>
-          <div className="mt-2 grid grid-cols-2 gap-2 lg:grid-cols-6">
+          <div className="grid grid-cols-2 gap-px border-x border-b lg:grid-cols-3" style={{ borderColor: C.grid, background: C.grid }}>
             {kpis.map((item) => (
-              <div key={item.label} className="rounded-md border border-border border-t-2 border-t-brand bg-card px-3 py-2">
-                <p className="text-[10px] text-muted-foreground">{item.label}</p>
-                <p className="mt-1 text-sm font-black">{item.value}</p>
+              <div key={item.label} className="bg-card px-2.5 py-2" dir="ltr">
+                <p className="text-[9px] text-muted-foreground">{item.label}</p>
+                <p className="mt-0.5 text-[13px] font-black" style={{ color: C.blue }}>{item.value}</p>
+                <p className="text-[9px] text-muted-foreground" dir="rtl">{item.sub}</p>
               </div>
             ))}
           </div>
         </>
       )}
 
-      {months.length > 0 && (
+      {/* جدول التوازن الشهري الكامل */}
+      {hasMonths && totals && (
         <>
-          <h4 className="mt-4 text-xs font-black text-skyline">الإنتاجية الشهرية (kWh)</h4>
-          <div className="mt-2 flex h-40 items-end gap-1 rounded-md bg-muted/40 p-2" dir="ltr">
-            {months.map((m) => (
-              <div key={m.month} className="flex h-full flex-1 flex-col items-center justify-end gap-1">
-                <span className="text-[8px] font-bold text-muted-foreground">{nf(m.energy)}</span>
-                <span
-                  className="w-full rounded-t bg-brand"
-                  style={{ height: `${barHeight(m.energy)}%` }}
-                  title={`${m.month}: ${nf(m.energy)} kWh`}
-                />
-                <span className="text-[8px] font-bold">{m.month.slice(0, 3)}</span>
-              </div>
-            ))}
-          </div>
-          {result.bestMonth && result.worstMonth && (
-            <p className="mt-1.5 text-[10px] text-muted-foreground">
-              أعلى شهر إنتاجاً: {result.bestMonth} — أدنى شهر إنتاجاً: {result.worstMonth}
-            </p>
-          )}
-
-          <h4 className="mt-4 text-xs font-black text-skyline">جدول الإنتاجية الشهرية</h4>
-          <div className="mt-2 -mx-1 overflow-x-auto px-1" data-quote-scroll>
-            <table className="w-full min-w-[430px] border-collapse text-[11px]">
+          <h4 className="mt-4 rounded-t-md px-2 py-1 text-[11px] font-black text-white" style={{ background: C.blue }} dir="ltr">
+            Balances and main results
+          </h4>
+          <div className="-mx-1 overflow-x-auto px-1" data-quote-scroll dir="ltr">
+            <table className="w-full min-w-[620px] border-collapse" style={{ borderColor: C.grid }}>
               <thead>
-                <tr className="bg-brand text-brand-foreground">
-                  <th className="border border-border px-2 py-1.5 font-black">الشهر</th>
-                  {hasGhi && <th className="hidden border border-border px-2 py-1.5 font-black md:table-cell">الأفقي kWh/m²</th>}
-                  <th className="border border-border px-2 py-1.5 font-black">الإشعاع kWh/m²</th>
-                  <th className="hidden border border-border px-2 py-1.5 font-black sm:table-cell">الفعّال kWh/m²</th>
-                  <th className="hidden border border-border px-2 py-1.5 font-black lg:table-cell">الحرارة °م</th>
-                  <th className="border border-border px-2 py-1.5 font-black">الإنتاج kWh</th>
-                  <th className="border border-border px-2 py-1.5 font-black">PR</th>
+                <tr style={{ background: C.head }}>
+                  <th className={th} style={{ borderColor: C.grid }}></th>
+                  <th className={th} style={{ borderColor: C.grid }}>GlobHor<br /><span className="font-normal">kWh/m²</span></th>
+                  <th className={th} style={{ borderColor: C.grid }}>DiffHor<br /><span className="font-normal">kWh/m²</span></th>
+                  <th className={th} style={{ borderColor: C.grid }}>T_Amb<br /><span className="font-normal">°C</span></th>
+                  <th className={th} style={{ borderColor: C.grid }}>GlobInc<br /><span className="font-normal">kWh/m²</span></th>
+                  <th className={th} style={{ borderColor: C.grid }}>GlobEff<br /><span className="font-normal">kWh/m²</span></th>
+                  <th className={th} style={{ borderColor: C.grid }}>EArray<br /><span className="font-normal">kWh</span></th>
+                  <th className={th} style={{ borderColor: C.grid }}>E_Grid<br /><span className="font-normal">kWh</span></th>
+                  <th className={th} style={{ borderColor: C.grid }}>PR<br /><span className="font-normal">ratio</span></th>
                 </tr>
               </thead>
               <tbody>
-                {months.map((m) => (
-                  <tr key={m.month} className="odd:bg-muted/40">
-                    <td className="border border-border px-2 py-1 text-center font-bold">{m.month}</td>
-                    {hasGhi && (
-                      <td className="hidden border border-border px-2 py-1 text-center md:table-cell">{m.ghi !== null ? nf(m.ghi, 1) : "—"}</td>
-                    )}
-                    <td className="border border-border px-2 py-1 text-center">{nf(m.irradiation, 1)}</td>
-                    <td className="hidden border border-border px-2 py-1 text-center sm:table-cell">{nf(m.globEff, 1)}</td>
-                    <td className="hidden border border-border px-2 py-1 text-center lg:table-cell">{nf(m.temp, 1)}</td>
-                    <td className="border border-border px-2 py-1 text-center font-bold">{nf(m.energy)}</td>
-                    <td className="border border-border px-2 py-1 text-center">{nf(m.pr * 100, 1)}%</td>
+                {months.map((m, i) => (
+                  <tr key={m.month} className="odd:bg-muted/30">
+                    <td className={`${td} font-black`} style={{ borderColor: C.grid }}>{MONTHS_SHORT[i]}</td>
+                    <td className={td} style={{ borderColor: C.grid }}>{m.ghi !== null ? nf(m.ghi, 1) : "—"}</td>
+                    <td className={td} style={{ borderColor: C.grid }}>{m.dhi !== null ? nf(m.dhi, 1) : "—"}</td>
+                    <td className={td} style={{ borderColor: C.grid }}>{nf(m.temp, 2)}</td>
+                    <td className={td} style={{ borderColor: C.grid }}>{nf(m.irradiation, 1)}</td>
+                    <td className={td} style={{ borderColor: C.grid }}>{nf(m.globEff, 1)}</td>
+                    <td className={td} style={{ borderColor: C.grid }}>{nf(m.eArray)}</td>
+                    <td className={`${td} font-bold`} style={{ borderColor: C.grid }}>{nf(m.energy)}</td>
+                    <td className={td} style={{ borderColor: C.grid }}>{nf(m.pr, 3)}</td>
                   </tr>
                 ))}
+                <tr style={{ background: C.head }}>
+                  <td className={`${td} font-black`} style={{ borderColor: C.grid }}>Year</td>
+                  <td className={`${td} font-black`} style={{ borderColor: C.grid }}>{totals.ghi ? nf(totals.ghi, 1) : "—"}</td>
+                  <td className={`${td} font-black`} style={{ borderColor: C.grid }}>{totals.dhi ? nf(totals.dhi, 1) : "—"}</td>
+                  <td className={`${td} font-black`} style={{ borderColor: C.grid }}>
+                    {nf(months.reduce((a, m) => a + m.temp, 0) / 12, 2)}
+                  </td>
+                  <td className={`${td} font-black`} style={{ borderColor: C.grid }}>{nf(totals.inc, 1)}</td>
+                  <td className={`${td} font-black`} style={{ borderColor: C.grid }}>{nf(totals.eff, 1)}</td>
+                  <td className={`${td} font-black`} style={{ borderColor: C.grid }}>{nf(totals.arr)}</td>
+                  <td className={`${td} font-black`} style={{ borderColor: C.grid }}>{nf(totals.grid)}</td>
+                  <td className={`${td} font-black`} style={{ borderColor: C.grid }}>
+                    {result.annualPr ? nf(result.annualPr, 3) : "—"}
+                  </td>
+                </tr>
               </tbody>
-              <tfoot className="font-black">
-                {result.annualEnergy && (
-                  <tr className="bg-secondary">
-                    <td className="border border-border px-2 py-1.5 text-center">الإجمالي السنوي</td>
-                    <td className="border border-border px-2 py-1.5 text-center" colSpan={9}>{nf(result.annualEnergy)} kWh</td>
-                  </tr>
-                )}
-                {result.monthlyAverage && (
-                  <tr className="bg-secondary">
-                    <td className="border border-border px-2 py-1.5 text-center">متوسط الإنتاج الشهري</td>
-                    <td className="border border-border px-2 py-1.5 text-center" colSpan={9}>{nf(result.monthlyAverage)} kWh</td>
-                  </tr>
-                )}
-                {result.annualPr && (
-                  <tr className="bg-secondary">
-                    <td className="border border-border px-2 py-1.5 text-center">معامل الأداء السنوي</td>
-                    <td className="border border-border px-2 py-1.5 text-center" colSpan={9}>{nf(result.annualPr * 100, 1)}%</td>
-                  </tr>
-                )}
-              </tfoot>
             </table>
           </div>
+          <p className="mt-1 text-[9px] text-muted-foreground" dir="ltr">
+            GlobHor: Global horizontal irradiation — DiffHor: Diffuse horizontal — GlobInc: Global incident in coll. plane —
+            GlobEff: Effective global, corr. for IAM and shadings — EArray: Effective energy at the array output — E_Grid:
+            Energy injected into grid — PR: Performance Ratio
+          </p>
         </>
       )}
 
+      {/* الرسمان البيانيان القياسيان */}
+      {norm.length === 12 && (
+        <div className="mt-4 grid gap-3 lg:grid-cols-2" dir="ltr">
+          <figure className="rounded-md border p-2" style={{ borderColor: C.grid }}>
+            <figcaption className="text-center text-[10px] font-black" style={{ color: C.blue }}>
+              Normalized productions (per installed kWp): Nominal power {s.kwp ? `${nf(s.kwp, 2)} kWp` : ""}
+            </figcaption>
+            <div className="mt-2 flex gap-1">
+              <div className="flex h-36 flex-col justify-between text-[8px] text-muted-foreground">
+                {Array.from({ length: 6 }, (_, i) => (
+                  <span key={i}>{nf(normTop - (i * normTop) / 5, 1)}</span>
+                ))}
+              </div>
+              <div className="flex h-36 flex-1 items-end gap-[3px] border-b border-l" style={{ borderColor: C.grid }}>
+                {norm.map((n, i) => (
+                  <div key={i} className="flex h-full flex-1 flex-col justify-end">
+                    <span style={{ height: `${(n.lc / normTop) * 100}%`, background: C.violet }} />
+                    <span style={{ height: `${(n.ls / normTop) * 100}%`, background: C.red }} />
+                    <span style={{ height: `${(n.yf / normTop) * 100}%`, background: C.sun }} />
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="mt-1 flex gap-[3px] pl-6 text-center text-[8px] text-muted-foreground">
+              {MONTHS_SHORT.map((m) => (
+                <span key={m} className="flex-1">{m}</span>
+              ))}
+            </div>
+            <ul className="mt-2 space-y-0.5 text-[8.5px]">
+              <li className="flex items-center gap-1">
+                <i className="inline-block size-2" style={{ background: C.violet }} /> Lc : Collection Loss (PV-array losses){" "}
+                {nf(avg((n) => n.lc), 2)} kWh/kWp/day
+              </li>
+              <li className="flex items-center gap-1">
+                <i className="inline-block size-2" style={{ background: C.red }} /> Ls : System Loss (inverter, ...){" "}
+                {nf(avg((n) => n.ls), 2)} kWh/kWp/day
+              </li>
+              <li className="flex items-center gap-1">
+                <i className="inline-block size-2" style={{ background: C.sun }} /> Yf : Produced useful energy (inverter output){" "}
+                {nf(avg((n) => n.yf), 2)} kWh/kWp/day
+              </li>
+            </ul>
+          </figure>
+
+          <figure className="rounded-md border p-2" style={{ borderColor: C.grid }}>
+            <figcaption className="text-center text-[10px] font-black" style={{ color: C.blue }}>
+              Performance Ratio PR
+            </figcaption>
+            <div className="mt-2 flex gap-1">
+              <div className="flex h-36 flex-col justify-between text-[8px] text-muted-foreground">
+                {Array.from({ length: 7 }, (_, i) => (
+                  <span key={i}>{nf(1.2 - i * 0.2, 1)}</span>
+                ))}
+              </div>
+              <div className="flex h-36 flex-1 items-end gap-[3px] border-b border-l" style={{ borderColor: C.grid }}>
+                {norm.map((n, i) => (
+                  <div key={i} className="flex h-full flex-1 flex-col justify-end">
+                    <span style={{ height: `${(n.pr / 1.2) * 100}%`, background: C.blue }} />
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="mt-1 flex gap-[3px] pl-6 text-center text-[8px] text-muted-foreground">
+              {MONTHS_SHORT.map((m) => (
+                <span key={m} className="flex-1">{m}</span>
+              ))}
+            </div>
+            <p className="mt-2 flex items-center gap-1 text-[8.5px]">
+              <i className="inline-block size-2" style={{ background: C.blue }} /> PR : Performance Ratio (Yf / Yr) ={" "}
+              {result.annualPr ? nf(result.annualPr, 3) : "—"}
+            </p>
+          </figure>
+        </div>
+      )}
+
+      {/* مخطط شلال الفواقد */}
       {result.lossBreakdown.length > 0 && (
         <>
-          <h4 className="mt-4 text-xs font-black text-skyline">تفصيل الفواقد السنوية</h4>
-          <div className="mt-2 grid gap-1.5 sm:grid-cols-2 lg:grid-cols-3">
-            {result.lossBreakdown.map((row) => (
-              <div key={row.label} className="flex items-center justify-between gap-2 rounded-md bg-muted/50 px-3 py-1.5">
-                <span className="text-[10px] font-semibold">{row.label}</span>
-                <span className={`text-[11px] font-black ${row.percent < 0 ? "text-brand" : "text-energy"}`} dir="ltr">
-                  {row.percent > 0 ? "+" : ""}{nf(row.percent * 100, 2)}%
-                </span>
+          <h4 className="mt-4 rounded-t-md px-2 py-1 text-[11px] font-black text-white" style={{ background: C.blue }} dir="ltr">
+            Loss diagram over the whole year
+          </h4>
+          <div className="border-x border-b p-2" style={{ borderColor: C.grid }} dir="ltr">
+            {result.annualIrradiation && (
+              <div className="mb-1.5 rounded px-2 py-1 text-[10px] font-black text-white" style={{ background: C.sun }}>
+                {nf(result.annualIrradiation)} kWh/m² — Global horizontal irradiation on collector plane
               </div>
-            ))}
+            )}
+            <ul className="space-y-[3px]">
+              {result.lossBreakdown.map((row) => {
+                const gain = row.percent > 0;
+                const width = Math.min(100, Math.max(6, Math.abs(row.percent) * 100 * 8));
+                return (
+                  <li key={row.label} className="flex items-center gap-2">
+                    <span className="w-8 shrink-0 text-center text-[10px]" style={{ color: gain ? C.blue : C.red }}>
+                      {gain ? "▲" : "▼"}
+                    </span>
+                    <span className="min-w-0 flex-1">
+                      <span className="block truncate text-[9.5px] font-semibold">{LOSS_EN[row.label] ?? row.label}</span>
+                      <span className="mt-[2px] block h-[6px] rounded-sm" style={{ width: `${width}%`, background: gain ? C.blue : C.red }} />
+                    </span>
+                    <span className="w-14 shrink-0 text-right text-[10px] font-black tabular-nums" style={{ color: gain ? C.blue : C.red }}>
+                      {gain ? "+" : ""}{nf(row.percent * 100, 2)}%
+                    </span>
+                  </li>
+                );
+              })}
+            </ul>
+            {result.annualEnergy && (
+              <div className="mt-2 rounded px-2 py-1 text-[10px] font-black text-white" style={{ background: C.blue }}>
+                {nf(result.annualEnergy)} kWh — Energy injected into grid
+              </div>
+            )}
           </div>
+          <p className="mt-1 text-[10px] text-muted-foreground">
+            مخطط الفواقد السنوي: من الإشعاع الساقط على الألواح وحتى الطاقة النهائية المُنتجة.
+          </p>
         </>
       )}
 
