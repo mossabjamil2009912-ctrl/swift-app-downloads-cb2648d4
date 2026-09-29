@@ -383,10 +383,10 @@ export function SldSvg({ m }: { m: SldModel }) {
             <line key={x} x1={x} y1={earthY - 22} x2={x} y2={earthY} stroke={C.earth} strokeWidth={1.4} strokeDasharray="4 3" />
           ))}
           <EarthSymbol x={xOut + wOut - 40} y={earthY + 8} />
-          <text x={xOut + wOut - 40} y={earthY - 8} textAnchor="middle" fontFamily={F} fontSize={8.4} fill={C.earth}>
+          <text x={xOut + wOut - 40} y={earthY - 13} textAnchor="middle" fontFamily={F} fontSize={8.4} fill={C.earth}>
             EARTHING PIT
           </text>
-          <text x={xPv} y={earthY - 8} fontFamily={F} fontSize={8.4} fontWeight={700} fill={C.earth}>
+          <text x={xPv} y={earthY - 13} fontFamily={F} fontSize={8.4} fontWeight={700} fill={C.earth}>
             PE — EARTH BONDING BUS 1×16 mm²
           </text>
         </>
