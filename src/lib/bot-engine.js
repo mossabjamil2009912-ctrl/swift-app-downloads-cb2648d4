@@ -2311,7 +2311,7 @@ export function runStateMachine(__session, __parsed, __itemPrices) {
         indSet({ c: city });
         var _fi = indGet(); var _fz = pvDesign();
         var _fa = (_fi && _fi.pend) || 'quote';
-        if (!_fz || !_fi) { step = 'ind_activity'; response = W(' تعذر استرجاع بيانات المشروع، يرجى البدء من جديد._') + '\n' + indActivityAsk(); }
+        if (!_fz || !_fi) { step = 'ind_total_kw'; response = W(' تعذر استرجاع بيانات المشروع، يرجى البدء من جديد._') + '\n' + indTotalAsk(); }
         else {
           customer_name = customer_name || _fi.name || '';
           quote_number = _fi.qn || quote_number;
@@ -2758,7 +2758,7 @@ export function runStateMachine(__session, __parsed, __itemPrices) {
   }
   function indLoadSrcAsk() { return indHdr('بيانات الأحمال') + 'كيف تزودنا بأحمال المصنع؟\n\n1 — جدول أحمال Excel / PDF\n2 — صورة لوحات البيانات\n3 — إدخال القيم يدوياً'; }
   function indLoadFileAsk() { return indHdr('جدول الأحمال') + 'أرفق جدول الأحمال أو صور لوحات البيانات ليدققه الفريق الهندسي\n\nبعد الإرفاق سنطلب القيم الأساسية لإتمام التصميم الأولي، أو يمكنك تخطي هذه الخطوة والإدخال يدوياً'; }
-  function indTotalAsk() { return indHdr('إجمالي الأحمال') + 'إجمالي الحمل التشغيلي أثناء العمل بالكيلووات\n(مجموع الماكينات والإنارة والتكييف التي تعمل معاً)\nمثال: 120'; }
+  function indTotalAsk() { return indHdr('حمل المصنع') + 'كم إجمالي الحمل الكهربائي لمصنعك بالكيلووات؟\n(مجموع ما يعمل معاً من ماكينات وإنارة وتكييف)\n\nاختر قيمة سريعة أو اكتب الرقم مباشرة'; }
   function indMaxAsk() { return indHdr('أكبر ماكينة') + 'قدرة أكبر ماكينة أو محرك منفرد في المصنع بالكيلووات\nمثال: 30\n\nتحدد هذه القيمة تيار الإقلاع وسعة الإنفرترات اللازمة'; }
   function indMotorsAsk() { return indHdr('تيار الإقلاع') + 'هل توجد محركات ذات تيار إقلاع عالٍ مثل الضواغط والمضخات الكبيرة والكسارات والمصاعد؟\nهذا يحدد سعة الإنفرترات اللازمة لبدء التشغيل بأمان'; }
   function indMotorKwAsk() { return indHdr('قدرة المحرك') + 'قدرة أكبر محرك ذي تيار إقلاع عالٍ بالكيلووات\nمثال: 22'; }
@@ -2883,10 +2883,7 @@ export function runStateMachine(__session, __parsed, __itemPrices) {
   // حالة المسار الزراعي محفوظة داخل main_loads بصيغة JSON: { l:[24], c:'', m:'', agr:{...} }
   var AGR_PUMP_TYPES = {
     '1': 'غاطس بئر ارتوازي',
-    '2': 'مضخة سطحية / بركة',
-    '3': 'ري بالتنقيط',
-    '4': 'رشاشات محورية',
-    '5': 'غير محدد'
+    '2': 'مضخة سطحية / بركة'
   };
   var AGR_SOURCES = { '1': 'مولد ديزل', '2': 'شبكة كهرباء' };
   var AGR_VFD_SIZES = [1.5, 2.2, 4, 5.5, 7.5, 11, 15, 18.5, 22, 30, 37, 45, 55, 75, 90, 110];
@@ -2896,7 +2893,7 @@ export function runStateMachine(__session, __parsed, __itemPrices) {
   function agrGet() { var o = agrLoad(); return o ? o.agr : null; }
   function agrInit() {
     var l = []; for (var i = 0; i < 24; i++) { l.push(0); }
-    pvSave({ l: l, c: '', m: '', agr: { ptype: '', hp: 0, depth: 0, hours: 0, npumps: 1, src: '', diesel: 0, c: '' } });
+    pvSave({ l: l, c: '', m: '', agr: { ptype: '', hp: 0, depth: 0, hours: 6, npumps: 1, src: '', diesel: 0, c: '' } });
   }
   function agrSet(patch) {
     var o = agrLoad(); if (!o) { agrInit(); o = agrLoad(); if (!o) { return; } }
@@ -2942,9 +2939,7 @@ export function runStateMachine(__session, __parsed, __itemPrices) {
     s += 'أولاً: بيانات المزرعة\n';
     s += '• الاستخدام: ' + (AGR_PUMP_TYPES[ag.ptype] || '-') + '\n';
     s += '• المضخة: ' + (ag.hp ? ag.hp + ' حصان' : 'تُحدد بعد المعاينة') + ' × ' + (ag.npumps || 1) + '\n';
-    s += '• عمق الضخ: ' + (ag.depth ? ag.depth + ' متر' : 'يُحدد بعد المعاينة') + '\n';
-    s += '• ساعات الري: ' + z.hours + ' ساعة/يوم\n';
-    s += '• المصدر الحالي: ' + (AGR_SOURCES[ag.src] || '-') + '\n';
+    s += '• ساعات الضخ المعتمدة: ' + z.hours + ' ساعات ذروة شمس/يوم\n';
     s += '• الموقع: ' + (ag.c || city || '-') + '\n';
     s += SEP + '\nثانياً: التصميم المقترح\n';
     s += '• قدرة المضخات: ' + z.kw + ' كيلووات\n';
@@ -2953,8 +2948,6 @@ export function runStateMachine(__session, __parsed, __itemPrices) {
     s += '• مساحة التركيب التقديرية: ' + z.area + ' متر مربع\n';
     s += '• الطاقة اليومية للضخ: ' + z.daily + ' كيلووات ساعة\n';
     s += '• المنظومة تعمل بالضخ المباشر نهاراً بدون بطاريات\n';
-    if (ag.diesel) { s += '\nثالثاً: الوفر التقديري\n• تكلفة تشغيلك الحالية: ' + money(parseFloat(ag.diesel)) + ' ريال شهرياً تتحول إلى ضخ شمسي مجاني نهاراً\n'; }
-    if (parseFloat(ag.depth) >= 150) { s += '\n⚠️ عمق الضخ مرتفع، ويحتاج مراجعة منحنى المضخة والكابل الغاطس قبل الاعتماد\n'; }
     if ((parseInt(ag.npumps, 10) || 1) > 1) { s += '\n⚠️ تشغيل أكثر من مضخة يتطلب مراجعة تيار الإقلاع وطريقة التتابع\n'; }
     s += SEP + '\nهذا تصميم أولي، ويُعتمد نهائياً بعد مراجعة بيانات البئر والمضخة من الفريق الهندسي\n\nيمكنك طلب عرض السعر الرسمي، أو حجز معاينة ميدانية للبئر';
     return W(s);
@@ -3200,13 +3193,9 @@ export function runStateMachine(__session, __parsed, __itemPrices) {
     agr_quote_ask: 'agr_bill',
     agr_pump_type: 'menu_sys3',
     agr_pump_power: 'agr_pump_type',
-    agr_well_depth: 'agr_pump_power',
-    agr_hours: 'agr_well_depth',
-    agr_pumps: 'agr_hours',
-    agr_source: 'agr_pumps',
-    agr_diesel: 'agr_source',
-    agr_loc: 'agr_diesel',
-    agr_result: 'agr_source',
+    agr_pumps: 'agr_pump_power',
+    agr_loc: 'agr_pumps',
+    agr_result: 'agr_pumps',
     agr_name: 'agr_result',
     agr_visit_date: 'agr_result',
     com_method: 'menu_sys3',
@@ -3229,17 +3218,10 @@ export function runStateMachine(__session, __parsed, __itemPrices) {
     plan_pick: 'qnext_ask',
     study_ask: 'plan_pick',
     sld_ask: 'plan_pick',
-    ind_activity: 'menu_sys3',
-    ind_shifts: 'ind_activity',
-    ind_total_kw: 'ind_shifts',
-    ind_max_mach: 'ind_total_kw',
-    ind_source: 'ind_max_mach',
-    ind_gen_kva: 'ind_source',
-    ind_diesel: 'ind_gen_kva',
-    ind_goal: 'ind_source',
+    ind_total_kw: 'menu_sys3',
+    ind_goal: 'ind_total_kw',
     ind_result: 'ind_goal',
-    ind_name: 'ind_result',
-    ind_loc: 'ind_name',
+    ind_loc: 'ind_result',
     ind_quote_ask: 'ind_result',
 
     pv_loads: 'energy_menu',
@@ -3569,7 +3551,7 @@ export function runStateMachine(__session, __parsed, __itemPrices) {
     if (text === '1') { menu_choice = '1'; res_method = ''; step = 'res_bill'; response = resMethodAsk(); }
     else if (text === '2') { menu_choice = '2'; step = 'com_method'; response = comMethodAsk(); }
     else if (text === '3') { menu_choice = '4'; agrInit(); step = 'agr_pump_type'; response = agrPumpTypeAsk(); }
-    else if (text === '4') { menu_choice = '3'; indInit(''); step = 'ind_activity'; response = indActivityAsk(); }
+    else if (text === '4') { menu_choice = '3'; indInit(customer_name || ''); step = 'ind_total_kw'; response = indTotalAsk(); }
     else { response = noOpt(W(' اختر نوع المنظومة\n' + SEP + '\n1 - النظام السكني\n2 - النظام التجاري\n4 - النظام الصناعي\n3 - النظام الزراعي')); }
 
 
@@ -3685,7 +3667,7 @@ export function runStateMachine(__session, __parsed, __itemPrices) {
     else { response = noOpt(W('اختر نوع النظام:')); }
 
   } else if (step === 'menu_ind_agr') {
-    if (text === '1') { menu_choice = '3'; indInit(''); step = 'ind_activity'; response = indActivityAsk(); }
+    if (text === '1') { menu_choice = '3'; indInit(customer_name || ''); step = 'ind_total_kw'; response = indTotalAsk(); }
     else if (text === '2') { menu_choice = '4'; agrInit(); step = 'agr_pump_type'; response = agrPumpTypeAsk(); }
     else { response = noOpt(W('اختر نوع النظام:')); }
 
@@ -3813,7 +3795,11 @@ export function runStateMachine(__session, __parsed, __itemPrices) {
     var _tk = indNum(text);
     if (text === '__media__') { response = W(' تم استلام الملف\n' + SEP) + '\n' + indTotalAsk(); }
     else if (isNaN(_tk) || _tk <= 0) { response = noOpt(indTotalAsk()); }
-    else { indSet({ tot: _tk }); peak_load = String(_tk); step = 'ind_max_mach'; response = indMaxAsk(); }
+    else {
+      var _mAuto = Math.max(1, Math.round(_tk * 0.3));
+      indSet({ tot: _tk, maxm: _mAuto, motorkw: _mAuto, src: '2', genkva: 0, diesel: 0 });
+      peak_load = String(_tk); step = 'ind_goal'; response = indGoalAsk();
+    }
 
   } else if (step === 'ind_max_mach') {
     var _indT = indGet() || {};
@@ -3845,10 +3831,13 @@ export function runStateMachine(__session, __parsed, __itemPrices) {
     var _gl = String(text).replace(/^goal_/, '');
     if (_gl !== '1' && _gl !== '2' && _gl !== '3') { response = noOpt(indGoalAsk()); }
     else {
-      indSet({ goal: _gl, c: city, qn: 'ACTES-IND-' + String(Date.now()).slice(-6) });
+      var _shAuto = indShiftPreset(_gl === '2' ? 3 : 1);
+      indSet({ goal: _gl, shifts: _shAuto, nsh: _shAuto.length, cur: _shAuto.length, c: city, qn: 'ACTES-IND-' + String(Date.now()).slice(-6) });
+      var _hsAuto = indHoursSummary(indGet());
+      daily_hours = String(_hsAuto.total); night_hours = String(_hsAuto.night);
       var _indZ = indSizing();
       var _indI = indGet();
-      if (!_indZ || !_indI) { step = 'ind_activity'; response = W(' تعذر استرجاع بيانات المشروع، يرجى البدء من جديد._') + '\n' + indActivityAsk(); }
+      if (!_indZ || !_indI) { step = 'ind_total_kw'; response = W(' تعذر استرجاع بيانات المشروع، يرجى البدء من جديد._') + '\n' + indTotalAsk(); }
       else if (_indZ.nInv > IND_MAX_INV) { response = indOutOfRange(_indI); }
       else {
         system_type = ''; phase_type = _indZ.inv.ph === 3 ? 'three' : 'single';
@@ -3866,17 +3855,17 @@ export function runStateMachine(__session, __parsed, __itemPrices) {
 
   } else if (step === 'ind_result') {
     var _rz = pvDesign(); var _ri = indGet();
-    if (!_rz || !_ri) { step = 'ind_activity'; response = W(' تعذر استرجاع بيانات المشروع، يرجى البدء من جديد._') + '\n' + indActivityAsk(); }
+    if (!_rz || !_ri) { step = 'ind_total_kw'; response = W(' تعذر استرجاع بيانات المشروع، يرجى البدء من جديد._') + '\n' + indTotalAsk(); }
     else {
       quote_number = _ri.qn ? _ri.qn : quote_number;
       if (text === 'ind_quote' || text === '1' || /سعر|عرض/.test(String(text))) {
-        indSet({ pend: 'quote' }); step = 'ind_name'; response = indNameAsk();
+        indSet({ pend: 'quote', name: customer_name || _ri.name || '' }); city = ''; step = 'ind_loc_gov'; response = indLocAsk();
       }
       else if (text === 'ind_study' || text === '2' || /دراس|pvsyst/i.test(String(text))) {
-        indSet({ pend: 'study' }); step = 'ind_name'; response = indNameAsk();
+        indSet({ pend: 'study', name: customer_name || _ri.name || '' }); city = ''; step = 'ind_loc_gov'; response = indLocAsk();
       }
       else if (text === 'ind_sld' || text === '3' || /مخطط|sld/i.test(String(text))) {
-        indSet({ pend: 'sld' }); step = 'ind_name'; response = indNameAsk();
+        indSet({ pend: 'sld', name: customer_name || _ri.name || '' }); city = ''; step = 'ind_loc_gov'; response = indLocAsk();
       }
       else if (text === 'buy_invoice') { customer_name = customer_name || _ri.name || ''; response = goBuy(); }
       else { response = noOpt(indResultAsk()); }
@@ -3894,7 +3883,7 @@ export function runStateMachine(__session, __parsed, __itemPrices) {
     if (text === '__media__') { response = textOnly(); }
     else if (isNaN(_ahp) || _ahp < 0) { response = agrBadInput(agrPumpPowerAsk()); }
     else if (_ahp > 150) { agrSet({ hp: _ahp }); response = agrOutOfRange(agrGet() || {}); }
-    else { agrSet({ hp: _ahp }); step = 'agr_well_depth'; response = agrWellDepthAsk(); }
+    else { agrSet({ hp: _ahp }); step = 'agr_pumps'; response = agrPumpsAsk(); }
 
   } else if (step === 'agr_well_depth') {
     var _adp = (text === 'unknown' || /لا اعرف|لا أعرف|لااعرف/.test(String(text))) ? 0 : indNum(text);
@@ -3912,7 +3901,7 @@ export function runStateMachine(__session, __parsed, __itemPrices) {
     var _anp = indNum(text);
     if (text === '__media__') { response = textOnly(); }
     else if (isNaN(_anp) || _anp < 1 || _anp > 20) { response = agrBadInput(agrPumpsAsk()); }
-    else { agrSet({ npumps: Math.round(_anp) }); step = 'agr_source'; response = agrSourceAsk(); }
+    else { agrSet({ npumps: Math.round(_anp) }); city = ''; step = 'agr_loc_gov'; response = agrLocAsk(); }
 
   } else if (step === 'agr_source') {
     var _asr = String(text).replace(/^agrs_/, '');
@@ -4584,10 +4573,7 @@ export function runStateMachine(__session, __parsed, __itemPrices) {
     if (st === 'agr_pump_type') {
       return { kind: 'list', button: 'اختر نوع الاستخدام', sections: [ { title: 'الاستخدام الزراعي', rows: [
         { id: 'agrt_1', title: 'غاطس بئر ارتوازي' },
-        { id: 'agrt_2', title: 'مضخة سطحية / بركة' },
-        { id: 'agrt_3', title: 'ري بالتنقيط' },
-        { id: 'agrt_4', title: 'رشاشات محورية' },
-        { id: 'agrt_5', title: 'غير محدد' }
+        { id: 'agrt_2', title: 'مضخة سطحية / بركة' }
       ] } ] };
     }
     if (st === 'agr_source') {
