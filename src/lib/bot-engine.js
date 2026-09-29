@@ -4011,7 +4011,8 @@ export function runStateMachine(__session, __parsed, __itemPrices) {
       if (cityKnown()) { send_study_file = true; step = 'sld_ask'; response = ''; followup_kind = ''; }
       else { city = ''; step = 'study_city_gov'; response = studySiteAsk(); }
     }
-    else if (step !== 'res_quote_ask' && (text === 'aq_sld' || text === 'sld_yes' || /مخطط|sld/i.test(String(text)))) { step = 'sld_ask'; response = sldAskMsg(); }
+    // لا شاشة تأكيد وسيطة: اعرض المخطط الكهربائي مباشرة.
+    else if (step !== 'res_quote_ask' && (text === 'aq_sld' || text === 'sld_yes' || /مخطط|sld/i.test(String(text)))) { make_sld = true; step = 'buy_ask'; response = ''; followup_kind = ''; }
     else if (text === 'aq_buy' || text === 'buy_invoice' || /شراء|متابعة/.test(String(text))) { response = goBuy(); }
     else if (text === '1') { wants_quote = 'yes'; step = 'quote_name'; response = askNameMsg(); }
     else if (text === '2') { wants_quote = 'no'; step = 'done'; response = m('no_quote'); }
@@ -4023,7 +4024,7 @@ export function runStateMachine(__session, __parsed, __itemPrices) {
       step = 'study_city_gov';
       response = studySiteAsk();
     }
-    else if (text === 'aq_sld' || text === 'sld_yes' || /مخطط|sld/i.test(String(text))) { step = 'sld_ask'; response = sldAskMsg(); }
+    else if (text === 'aq_sld' || text === 'sld_yes' || /مخطط|sld/i.test(String(text))) { make_sld = true; step = 'buy_ask'; response = ''; followup_kind = ''; }
     else { response = noOpt(planPickMsg()); }
 
   } else if (step === 'ind_quote_ask') {
@@ -4239,7 +4240,7 @@ export function runStateMachine(__session, __parsed, __itemPrices) {
       else { city = ''; step = 'study_city_gov'; response = studySiteAsk(); }
     }
     else if (text === 'buy_invoice') { response = goBuy(); }
-    else if (text === 'study_no' || isNoT(text)) { step = 'sld_ask'; response = sldAskMsg(); }
+    else if (text === 'study_no' || isNoT(text)) { make_sld = true; step = 'buy_ask'; response = ''; followup_kind = ''; }
     else { response = noOpt(studyAskMsg()); }
 
 

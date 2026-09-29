@@ -241,7 +241,7 @@ export function buildView(r: BotResult, step: string): View {
 
   const sldp = (r['sld_params'] || null) as Record<string, any> | null;
   let sld: View["sld"] = null;
-  if (r.make_sld || sldp) {
+  if (sldp) {
     const rows: { label: string; value: string }[] = [];
     const add = (label: string, value: unknown) => {
       if (value === undefined || value === null || value === "") return;
