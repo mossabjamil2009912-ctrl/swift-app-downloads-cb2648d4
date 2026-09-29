@@ -174,6 +174,12 @@ const STEP_LABELS: Record<string, string> = {
   item_menu: "قائمة المعدات",
   item_pick: "اختيار المعدات",
   item_qty: "الكمية المطلوبة",
+  sup_name: "الدعم الفني",
+  sup_city_gov: "موقع الخدمة",
+  sup_city_dist: "موقع الخدمة",
+  sup_city: "موقع الخدمة",
+  sup_device: "الجهاز أو النظام",
+  sup_problem: "وصف المشكلة",
 };
 
 const BACK_OPTION_TITLES = new Set(["العودة خطوة", "العودة للبداية", "العودة إلى البداية"]);
