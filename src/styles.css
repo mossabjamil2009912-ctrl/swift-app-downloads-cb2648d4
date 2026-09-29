@@ -280,19 +280,20 @@ html.corporate button, html.corporate a { transition: background-color .15s, col
 
 /* انتقال موحّد وسلس بين جميع الشاشات والمسارات */
 @keyframes screen-enter {
-  from { opacity: 0; transform: translate3d(-14px, 4px, 0); }
-  to { opacity: 1; transform: translate3d(0, 0, 0); }
+  from { opacity: 0.001; transform: translateX(-10px); }
+  to { opacity: 1; transform: translateX(0); }
 }
 .screen-enter {
-  animation: screen-enter 260ms cubic-bezier(0.22, 0.61, 0.36, 1) both;
-  will-change: opacity, transform;
+  animation: screen-enter 200ms ease-out both;
 }
+/* البطاقات تظهر ساطعة فوراً؛ حركة إزاحة خفيفة فقط بلا تلاشٍ يعلق في ويندوز */
 @keyframes item-enter {
-  from { opacity: 0; transform: translate3d(0, 10px, 0) scale(0.985); }
-  to { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
+  from { transform: translateY(6px); }
+  to { transform: translateY(0); }
 }
 .stagger-in > * {
-  animation: item-enter 170ms cubic-bezier(0.22, 0.61, 0.36, 1) both;
+  opacity: 1 !important;
+  animation: item-enter 150ms ease-out both;
 }
 .stagger-in > *:nth-child(1) { animation-delay: 0ms; }
 .stagger-in > *:nth-child(2) { animation-delay: 15ms; }
@@ -303,13 +304,13 @@ html.corporate button, html.corporate a { transition: background-color .15s, col
 .stagger-in > *:nth-child(n + 7) { animation-delay: 75ms; }
 /* انتقال انزلاقي ناعم بين خطوات طلب عرض السعر (اتجاه من اليمين لليسار) */
 @keyframes step-slide {
-  from { opacity: 0; transform: translate3d(18px, 0, 0); }
-  to { opacity: 1; transform: translate3d(0, 0, 0); }
+  from { opacity: 0.001; transform: translateX(14px); }
+  to { opacity: 1; transform: translateX(0); }
 }
 .step-slide {
-  animation: step-slide 190ms cubic-bezier(0.22, 0.61, 0.36, 1) both;
-  will-change: opacity, transform;
+  animation: step-slide 170ms ease-out both;
 }
+
 /* شريط تقدّم رفيع أعلى الشاشة بدل تعتيم الشاشة بالكامل */
 @keyframes thin-progress {
   0% { transform: translateX(100%); }
