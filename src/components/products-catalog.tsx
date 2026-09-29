@@ -4,7 +4,7 @@ import QRCode from "qrcode";
 import { CATEGORIES, findProduct, matchCompatibleProducts, productsByCategory, quickSpecs, type Product, type ProductCategory, type ProductFile } from "@/lib/products-data";
 import { isVoiceOn, isVoicePlatform, speakScreen, stopSpeaking } from "@/lib/voice-guide";
 import ProductVideoPlayer from "@/components/product-video";
-import { getProductVideo } from "@/lib/product-video";
+import { getProductVideo, videoIntroNarration } from "@/lib/product-video";
 
 
 // خدمة معلوماتية فقط — لا تحتوي أي زر بيع أو ربط بمسارات عروض الأسعار.

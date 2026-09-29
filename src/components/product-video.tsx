@@ -21,7 +21,7 @@ export default function ProductVideoPlayer({
   const [muted, setMuted] = useState(!isVoiceOn());
   const [time, setTime] = useState(0);
   const [duration, setDuration] = useState(0);
-  const narration = videoNarration(title, video);
+  const narration = narrationProp || videoNarration(title, video);
   const spokenRef = useRef("");
 
   // الفيديو نفسه بلا مسار صوتي، والشرح يأتي من التعليق الصوتي العربي.
