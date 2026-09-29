@@ -19,14 +19,18 @@ const CAT_BIG_ICON: Record<ProductCategory, ReactNode> = {
   batteries: <BatteryCharging className="size-10 lg:size-12" />,
 };
 
-/** نطق الشاشة — على سطح المكتب فقط ومع تفعيل المرشد الصوتي. */
-function useScreenVoice(key: string, text: string) {
+/**
+ * نطق الشاشة — على سطح المكتب فقط ومع تفعيل المرشد الصوتي.
+ * مع continueAfter يكمل الشرح مباشرة بعد الجملة الجارية (تعليق الفيديو) بلا قطع ولا صمت.
+ */
+function useScreenVoice(key: string, text: string, continueAfter = false) {
   useEffect(() => {
     if (!text) return;
     if (!isVoicePlatform() || !isVoiceOn()) return;
-    speakScreen(key, text);
+    if (continueAfter) speakScreenAfterCurrent(key, text);
+    else speakScreen(key, text);
     return () => stopSpeaking();
-  }, [key, text]);
+  }, [key, text, continueAfter]);
 }
 
 export default function ProductsCatalog({ productId, onOpen, onBack, returnTo }: { productId: string | null; onOpen: (id: string | null) => void; onBack: () => void; returnTo?: { label: string; onReturn: () => void } | null }) {
