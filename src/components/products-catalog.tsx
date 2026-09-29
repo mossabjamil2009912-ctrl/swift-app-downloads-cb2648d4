@@ -219,7 +219,38 @@ function specSummaryText(product: Product) {
   return [`${product.name} — ${product.brand}`, `الموديل: ${product.model}`, `القدرة: ${product.power}`, "", ...lines, "", productUrl(product.id)].join("\n");
 }
 
-/** نافذة معاينة ملف PDF داخل التطبيق. */
+/** اسم ملف نظيف للتنزيل من رابط الملف. */
+function fileNameOf(file: ProductFile) {
+  const base = (file.url.split("?")[0] ?? "").split("/").pop() || "document.pdf";
+  return /\.pdf$/i.test(base) ? base : `${base}.pdf`;
+}
+
+/** تنزيل الملف عبر جلب محتواه أولاً — يعمل داخل تطبيق الويندوز وفي المتصفح. */
+async function downloadFile(file: ProductFile) {
+  try {
+    const res = await fetch(file.url);
+    if (!res.ok) throw new Error("fetch failed");
+    const blob = await res.blob();
+    const href = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = href;
+    a.download = fileNameOf(file);
+    a.rel = "noopener";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(href), 10000);
+  } catch {
+    const a = document.createElement("a");
+    a.href = file.url;
+    a.download = fileNameOf(file);
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+  }
+}
+
+/** نافذة عرض ملف PDF داخل التطبيق. */
 function PdfViewer({ file, onClose }: { file: ProductFile; onClose: () => void }) {
   return (
     <div className="fixed inset-0 z-[70] flex flex-col bg-navy/80 p-2 backdrop-blur-sm sm:p-4" role="dialog" aria-modal="true">
@@ -227,8 +258,7 @@ function PdfViewer({ file, onClose }: { file: ProductFile; onClose: () => void }
         <div className="flex items-center gap-2 border-b border-border px-3 py-2">
           <FileText className="size-4 shrink-0 text-brand" />
           <span className="flex-1 truncate text-xs font-black text-navy lg:text-sm">{file.label}</span>
-          <a href={file.url} download className="rounded-full bg-navy-soft px-3 py-1 text-[11px] font-bold text-navy transition hover:opacity-90">تحميل</a>
-          <a href={file.url} target="_blank" rel="noopener noreferrer" className="rounded-full bg-skyline px-3 py-1 text-[11px] font-bold text-skyline-foreground transition hover:opacity-90">فتح خارجياً</a>
+          <button type="button" onClick={() => downloadFile(file)} className="rounded-full bg-navy-soft px-3 py-1 text-[11px] font-bold text-navy transition hover:opacity-90">تحميل</button>
           <button type="button" onClick={onClose} aria-label="إغلاق" className="grid size-7 place-items-center rounded-full bg-muted text-navy transition hover:bg-border"><X className="size-4" /></button>
         </div>
         <iframe src={file.url} title={file.label} className="h-full w-full flex-1 bg-muted" />
@@ -423,9 +453,8 @@ function ProductDetail({ product, onOpen, onBack, backLabel }: { product: Produc
                       <li key={f.url} className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-border px-3 py-2">
                         <span className="flex items-center gap-2 text-sm font-bold text-navy"><FileText className="size-4 text-brand" /> {f.label} <span className="text-xs font-normal text-muted-foreground">(PDF)</span></span>
                         <span className="flex gap-1.5">
-                          <button type="button" onClick={() => setViewFile(f)} className="inline-flex items-center gap-1 rounded-full bg-brand px-3 py-1 text-xs font-bold text-brand-foreground transition hover:opacity-90"><Eye className="size-3.5" /> معاينة</button>
-                          <a href={f.url} target="_blank" rel="noopener noreferrer" className="rounded-full bg-skyline px-3 py-1 text-xs font-bold text-skyline-foreground transition hover:opacity-90">فتح</a>
-                          <a href={f.url} download className="inline-flex items-center gap-1 rounded-full bg-navy-soft px-3 py-1 text-xs font-bold text-navy transition hover:opacity-90"><Download className="size-3.5" /> تحميل</a>
+                          <button type="button" onClick={() => setViewFile(f)} className="inline-flex items-center gap-1 rounded-full bg-skyline px-3 py-1 text-xs font-bold text-skyline-foreground transition hover:opacity-90"><Eye className="size-3.5" /> فتح</button>
+                          <button type="button" onClick={() => downloadFile(f)} className="inline-flex items-center gap-1 rounded-full bg-navy-soft px-3 py-1 text-xs font-bold text-navy transition hover:opacity-90"><Download className="size-3.5" /> تحميل</button>
                         </span>
                       </li>
                     ))}
