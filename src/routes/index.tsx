@@ -1317,7 +1317,7 @@ function HomeDashboard({ onService, onProducts }: { onService: (kind: "quote" | 
         <ServiceCard image={refCardQuote} icon={<FileText />} title="طلب عرض سعر" description="احصل على أفضل العروض والأسعار المناسبة لمشروعك." action="ابدأ الآن" tone="brand" onClick={() => onService("quote")} />
         <ServiceCard image={refCardEnergy} icon={<Sun />} title="حلول أنظمة الطاقة" description="اكتشف حلولنا المتكاملة لأنظمة الشمسية للمنازل والمنشآت." action="حلول الطاقة" tone="energy" onClick={() => onService("energy")} />
         <ServiceCard image={refCardSupport} icon={<Headphones />} title="الدعم الفني" description="فريقنا المتخصص جاهز لمساعدتك في أي استفسار أو مشكلة فنية." action="تواصل معنا" tone="skyline" onClick={() => onService("support")} />
-        <ServiceCard image={refCardProducts} icon={<Package />} title="تعرف على منتجاتنا" description="اكتشف منتجات ACTES، وتعرّف على مواصفاتها واستخداماتها واطلع على الكتالوجات والأدلة." action="استكشف المنتجات" tone="brand" onClick={onProducts} />
+        <ServiceCard image={refCardProducts} icon={<Package />} title="تعرف على منتجاتنا" description="اكتشف منتجات ACTES، وتعرّف على مواصفاتها واستخداماتها واطلع على الكتالوجات والأدلة." action="استكشف المنتجات" tone="navy" onClick={onProducts} />
       </section>
 
       <footer className="shrink-0 rounded-xl bg-navy px-3 py-2.5 text-center text-[11px] font-bold text-skyline-foreground lg:hidden">
@@ -1378,9 +1378,10 @@ function Feature({ icon, text }: { icon: ReactNode; text: string }) {
   return <div className="flex items-center gap-3 border-r border-sidebar-foreground/25 pr-3 [&_svg]:size-6 [&_svg]:text-brand">{icon}<span>{text}</span></div>;
 }
 
-function ServiceCard({ image, icon, title, description, action, tone, onClick }: { image: string; icon: ReactNode; title: string; description: string; action: string; tone: "brand" | "energy" | "skyline"; onClick: () => void }) {
-  const circle = tone === "brand" ? "bg-brand text-brand-foreground" : tone === "energy" ? "bg-energy text-energy-foreground" : "bg-skyline text-skyline-foreground";
+function ServiceCard({ image, icon, title, description, action, tone, onClick }: { image: string; icon: ReactNode; title: string; description: string; action: string; tone: "brand" | "energy" | "skyline" | "navy"; onClick: () => void }) {
+  const circle = tone === "brand" ? "bg-brand text-brand-foreground" : tone === "energy" ? "bg-energy text-energy-foreground" : tone === "navy" ? "bg-navy text-skyline-foreground" : "bg-skyline text-skyline-foreground";
   const btn = tone === "skyline" ? "bg-navy-soft text-navy" : circle;
+
   return (
     <button type="button" onClick={onClick} aria-label={title} className="group flex flex-col overflow-hidden rounded-xl border border-border bg-card text-right shadow-sm transition hover:shadow-md">
       <span data-photo-frame className="block aspect-[16/9] w-full overflow-hidden bg-muted"><img data-photo src={image} alt={title} loading="eager" decoding="async" width={1280} height={720} className="size-full object-cover transition duration-500 group-hover:scale-[1.03]" /></span>
