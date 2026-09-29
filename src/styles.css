@@ -280,10 +280,11 @@ html.corporate button, html.corporate a { transition: background-color .15s, col
 
 /* انتقال موحّد وسلس بين جميع الشاشات والمسارات */
 @keyframes screen-enter {
-  from { opacity: 0.001; transform: translateX(-10px); }
-  to { opacity: 1; transform: translateX(0); }
+  from { transform: translateX(-10px); }
+  to { transform: translateX(0); }
 }
 .screen-enter {
+  opacity: 1 !important;
   animation: screen-enter 200ms ease-out both;
 }
 /* البطاقات تظهر ساطعة فوراً؛ حركة إزاحة خفيفة فقط بلا تلاشٍ يعلق في ويندوز */
