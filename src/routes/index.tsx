@@ -781,7 +781,12 @@ function ActesApp() {
           )}
 
           {catalog ? (
-            <ProductsCatalog productId={catalog.productId} onOpen={(id) => { setCatalog({ productId: id }); mainRef.current?.scrollTo({ top: 0 }); }} onBack={() => setCatalog(null)} />
+            <ProductsCatalog
+              productId={catalog.productId}
+              onOpen={(id) => { setCatalog({ productId: id, fromQuote: catalog.fromQuote }); mainRef.current?.scrollTo({ top: 0 }); }}
+              onBack={() => setCatalog(null)}
+              returnTo={catalog.fromQuote ? { label: "العودة", onReturn: () => { setCatalog(null); mainRef.current?.scrollTo({ top: 0 }); } } : null}
+            />
           ) : view && isHome ? (
             <HomeDashboard onService={triggerService} onProducts={() => setCatalog({ productId: null })} />
           ) : view ? (
@@ -795,8 +800,9 @@ function ActesApp() {
               onPick={send}
               onBack={() => send("back_step")}
               onRestart={() => send("0")}
-              onOpenProduct={(id) => { setCatalog({ productId: id }); mainRef.current?.scrollTo({ top: 0 }); }}
+              onOpenProduct={(id) => { setCatalog({ productId: id, fromQuote: true }); mainRef.current?.scrollTo({ top: 0 }); }}
             />
+
 
           ) : null}
         </main>
