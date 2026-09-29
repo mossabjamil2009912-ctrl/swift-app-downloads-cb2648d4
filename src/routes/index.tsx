@@ -1406,6 +1406,31 @@ function stageIndex(step: string, hasQuote: boolean): number {
   return 1;
 }
 
+// مراحل مسار الدعم الفني — مؤشر مستقل عن مسار عرض السعر
+const SUPPORT_STAGES = ["بيانات العميل", "الموقع", "الجهاز", "المشكلة"];
+
+function SupportProgress({ step }: { step: string }) {
+  const current = step === "sup_name" ? 0 : step.startsWith("sup_city") ? 1 : step === "sup_device" ? 2 : 3;
+  return (
+    <div className="flex flex-wrap items-center gap-1.5">
+      {SUPPORT_STAGES.map((stage, index) => {
+        const done = index < current;
+        const active = index === current;
+        return (
+          <span key={stage} className="flex items-center gap-1.5">
+            <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[10px] font-black transition lg:text-[11px] ${active ? "bg-skyline text-skyline-foreground shadow-sm" : done ? "bg-skyline/10 text-skyline" : "bg-muted text-muted-foreground"}`}>
+              {done ? <Check className="size-3" /> : <span className="grid size-3.5 place-items-center rounded-full bg-current/20 text-[8px]">{index + 1}</span>}
+              {stage}
+            </span>
+            {index < SUPPORT_STAGES.length - 1 && <span className={`h-px w-3 ${done ? "bg-skyline/50" : "bg-border"}`} />}
+          </span>
+        );
+      })}
+    </div>
+  );
+}
+
+
 function StepProgress({ step, hasQuote }: { step: string; hasQuote: boolean }) {
   const current = stageIndex(step, hasQuote);
   return (
