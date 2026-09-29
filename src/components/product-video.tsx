@@ -8,10 +8,12 @@ import { isVoiceOn, speak, stopSpeaking, unlockVoice } from "@/lib/voice-guide";
 export default function ProductVideoPlayer({
   video,
   title,
+  narration: narrationProp,
   onFinish,
 }: {
   video: ProductVideo;
   title: string;
+  narration?: string;
   onFinish: () => void;
 }) {
   const ref = useRef<HTMLVideoElement | null>(null);
