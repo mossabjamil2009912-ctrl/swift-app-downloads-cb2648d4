@@ -124,9 +124,7 @@ export function resultToTurn(r: BotResult): ChatTurn {
   if (r.send_study_file) {
     messages.push({ id: nextId(), from: "bot", kind: "doc", name: "ACTES-PV-Study.pdf", caption: "دراسة الأداء PVsyst" });
   }
-  if (r.make_sld) {
-    messages.push({ id: nextId(), from: "bot", kind: "doc", name: "ACTES-SLD.pdf", caption: "المخطط أحادي الخط SLD" });
-  }
+  // المخطط الكهربائي يُرسم داخل الشاشة، فلا تُضاف بطاقة ملف شكلية.
 
   if (Array.isArray(r.extra_payloads)) {
     const norm = (v: unknown) => String(v ?? "").replace(/[^0-9]/g, "").replace(/^0+/, "").replace(/^967/, "");
