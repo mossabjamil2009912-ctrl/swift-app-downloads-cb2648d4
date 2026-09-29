@@ -1,4 +1,5 @@
 import type { PvsystStudyResult } from "./pvsyst-engine";
+import actesLogoPlain from "@/assets/actes-logo-plain.png.asset.json";
 
 /**
  * يبني تقرير محاكاة بنفس تصميم وتنسيق وألوان تقرير PVsyst V8.1.2 الرسمي:
@@ -57,7 +58,7 @@ export function downloadPvsystReport(study: PvsystStudyResult) {
   if (typeof window === "undefined") return;
   const s = study.system;
   const origin = window.location.origin;
-  const logo = `${origin}/brand/actes-logo.png`;
+  const logo = `${origin}${actesLogoPlain.url}`;
 
   /** اسم المشروع = اسم العميل */
   const project = study.customer || study.reference || "ACTES Project";
