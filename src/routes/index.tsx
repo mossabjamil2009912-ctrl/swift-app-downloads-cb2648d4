@@ -1540,7 +1540,7 @@ function QuoteWorkspace({ view, session, step, draft, setDraft, onPick, onBack, 
                   : step === "pv_loads"
                     ? <HourlyLoadEntry onSubmit={onPick} />
                     : <DataEntry value={draft} onChange={setDraft} prompt={entryPrompt(step, session)} onSubmit={submit} presets={ENTRY_PRESETS[step]} onQuick={onPick} />)}
-                {visibleOptions.length > 0 && <OptionGrid options={visibleOptions} selected={selected} projectCards={isProjectSelection} onSelect={(value) => { onPick(value); }} />}
+                {visibleOptions.length > 0 && <OptionGrid options={visibleOptions} selected={selected} projectCards={isProjectSelection} energyCards={isEnergyMenu} onSelect={(value) => { onPick(value); }} />}
               </div>
             )}
 
