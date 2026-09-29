@@ -323,7 +323,7 @@ function ProductDetail({ product, onOpen, onBack, backLabel }: { product: Produc
   return (
     <div className="screen-enter w-full space-y-4 pb-4">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <BackButton onClick={onBack} label={CATEGORIES.find((c) => c.id === product.category)?.title ?? "منتجاتنا"} />
+        <BackButton onClick={onBack} label={backLabel ?? CATEGORIES.find((c) => c.id === product.category)?.title ?? "منتجاتنا"} />
         <div className="flex items-center gap-2">
           {video ? (
             <button type="button" onClick={() => setReelDone(false)} className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1.5 text-xs font-bold text-navy shadow-sm transition hover:bg-muted">
