@@ -1850,23 +1850,18 @@ const ENTRY_PRESETS: Record<string, { label: string; value: string }[]> = {
     { label: "15 حصان", value: "15" },
     { label: "25 حصان", value: "25" },
   ],
-  agr_well_depth: [
-    { label: "50 م", value: "50" },
-    { label: "100 م", value: "100" },
-    { label: "150 م", value: "150" },
-    { label: "200 م", value: "200" },
-  ],
-  agr_hours: [
-    { label: "4 ساعات", value: "4" },
-    { label: "6 ساعات", value: "6" },
-    { label: "8 ساعات", value: "8" },
-    { label: "10 ساعات", value: "10" },
-  ],
   agr_pumps: [
     { label: "مضخة", value: "1" },
     { label: "مضختان", value: "2" },
     { label: "3 مضخات", value: "3" },
   ],
+  ind_total_kw: [
+    { label: "50 كيلووات", value: "50" },
+    { label: "100 كيلووات", value: "100" },
+    { label: "150 كيلووات", value: "150" },
+    { label: "250 كيلووات", value: "250" },
+  ],
+
   item_qty: [
     { label: "1", value: "1" },
     { label: "2", value: "2" },
