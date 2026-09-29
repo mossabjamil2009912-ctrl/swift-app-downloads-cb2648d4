@@ -1,4 +1,5 @@
 import type { PvsystStudyResult } from "./pvsyst-engine";
+import actesLogoPlain from "@/assets/actes-logo-plain.png.asset.json";
 
 /**
  * يبني تقرير محاكاة بنفس تصميم وتنسيق وألوان تقرير PVsyst V8.1.2 الرسمي:

@@ -3,6 +3,7 @@ import { ArrowLeft, Download, Network, ShoppingCart } from "lucide-react";
 import { buildPvsystStudy } from "@/lib/pvsyst-engine";
 import { downloadPvsystReport } from "@/lib/pvsyst-pdf";
 import type { View } from "@/lib/present";
+import actesLogoPlain from "@/assets/actes-logo-plain.png.asset.json";
 
 const nf = (n: number, d = 0) => n.toLocaleString("en-US", { minimumFractionDigits: d, maximumFractionDigits: d });
 
