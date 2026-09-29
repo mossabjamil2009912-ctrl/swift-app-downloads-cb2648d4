@@ -14,7 +14,8 @@ function esc(value: unknown) {
   );
 }
 
-const nf = (n: number, d = 0) => n.toLocaleString("en-US", { minimumFractionDigits: d, maximumFractionDigits: d });
+const nf = (n: number, d = 0) =>
+  n.toLocaleString("en-US", { minimumFractionDigits: d, maximumFractionDigits: d, useGrouping: false });
 
 const MONTHS_EN = [
   "January", "February", "March", "April", "May", "June",
@@ -159,7 +160,7 @@ export function downloadPvsystReport(study: PvsystStudyResult) {
 <style>
   *{box-sizing:border-box;-webkit-print-color-adjust:exact;print-color-adjust:exact}
   body{margin:0;font-family:Arial,Helvetica,sans-serif;color:#000;font-size:9.5pt;background:#fff}
-  .page{position:relative;width:190mm;min-height:272mm;padding:0 0 14mm;margin:0 auto;page-break-after:always}
+  .page{position:relative;width:190mm;min-height:264mm;padding:0 0 12mm;margin:0 auto;page-break-after:always}
   .page:last-child{page-break-after:auto}
   .pvmark{width:26mm;height:19mm;display:block}
   /* ترويسة الصفحة */
@@ -172,13 +173,14 @@ export function downloadPvsystReport(study: PvsystStudyResult) {
   .pver{margin-top:1mm;font-size:8pt;line-height:1.35}
   .pfoot{position:absolute;bottom:2mm;left:0;right:0;display:flex;justify-content:space-between;font-size:8.5pt;border-top:0}
   /* إطار القسم بعنوان في منتصف الحد العلوي */
-  .box{border:.8pt solid #000;margin-top:7mm;padding:6mm 5mm 4mm;position:relative}
+  .box{border:.8pt solid #000;margin-top:6mm;padding:5mm 5mm 3.5mm;position:relative}
   .box>h2{position:absolute;top:-2.4mm;left:50%;transform:translateX(-50%);margin:0;background:#fff;padding:0 3mm;font-size:11pt}
   .cols{display:flex;gap:5mm}
   .col{flex:1;min-width:0}
   h3{margin:0 0 1.5mm;font-size:9.5pt}
   .sub{margin:4mm 0 1.5mm;font-size:9.5pt;font-weight:bold}
   .ir{display:flex;justify-content:space-between;gap:3mm;line-height:1.55}
+  .ir>span{white-space:nowrap}
   .ir b{font-weight:normal;white-space:nowrap}
   .plain{line-height:1.55}
   /* الفهرس */
@@ -188,16 +190,16 @@ export function downloadPvsystReport(study: PvsystStudyResult) {
   .toc i{flex:1;border-bottom:.5pt solid #000;height:.5mm}
   /* الجداول */
   table{width:100%;border-collapse:collapse;font-size:8pt;margin-top:2mm}
-  th,td{border:.5pt solid #000;padding:1.1mm 1mm;text-align:center}
+  th,td{border:.5pt solid #000;padding:.8mm 1mm;text-align:center}
   thead th{font-weight:bold}
   td.mn,th.mn{text-align:left;font-weight:bold}
   tr.yr td{font-weight:bold;border-top:.9pt solid #000}
   .nb table,.nb th,.nb td{border:0}
   /* الرسوم البيانية */
-  .charts{display:flex;gap:6mm;margin-top:4mm}
+  .charts{display:flex;gap:6mm;margin-top:3mm}
   .chart{flex:1;min-width:0}
   .ctitle{text-align:center;font-weight:bold;font-size:9.5pt;margin-bottom:2mm}
-  .cbody{display:flex;height:46mm}
+  .cbody{display:flex;height:40mm}
   .cax{display:flex;flex-direction:column;justify-content:space-between;font-size:6.5pt;text-align:right;padding-right:1mm;width:8mm}
   .cplot{flex:1;border:.5pt solid #000;border-top:0;border-right:0;display:flex;align-items:flex-end;gap:1.2mm;padding:0 1.5mm;position:relative}
   .gcol{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;height:100%}
@@ -472,8 +474,8 @@ export function downloadPvsystReport(study: PvsystStudyResult) {
       </thead>
       <tbody>${balanceRows}${yearRow}</tbody>
     </table>
-    <div class="sub">Legends</div>
-    <div class="cols" style="font-size:8pt;line-height:1.7">
+    <div class="sub" style="margin:2.5mm 0 1mm">Legends</div>
+    <div class="cols" style="font-size:7.5pt;line-height:1.5">
       <div class="col">
         <div class="ir"><span>GlobHor</span><b>Global horizontal irradiation</b></div>
         <div class="ir"><span>DiffHor</span><b>Horizontal diffuse irradiation</b></div>
