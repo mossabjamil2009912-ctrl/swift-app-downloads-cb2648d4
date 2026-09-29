@@ -1,9 +1,11 @@
 {
   "version": 1,
-  "asset_id": "85ec7409-94ff-4195-b342-7f8b2d2d0efb",
-  "project_id": "c064c082-c4d8-4a84-b261-d5a141e56034",
-  "url": "/__l5e/assets-v1/85ec7409-94ff-4195-b342-7f8b2d2d0efb/suntech-stp595s-c72-nsh.mp4",
+  "asset_id": "85761fc3-00c8-4e58-8a2d-cf6061cf2a03",
+  "project_id": "3a339321-7177-4489-bf9f-a9f1851360ee",
+  "url": "/__l5e/assets-v1/85761fc3-00c8-4e58-8a2d-cf6061cf2a03/suntech-stp595s-c72-nsh.mp4",
+  "r2_key": "a/v1/3a339321-7177-4489-bf9f-a9f1851360ee/85761fc3-00c8-4e58-8a2d-cf6061cf2a03/suntech-stp595s-c72-nsh.mp4",
   "original_filename": "suntech-stp595s-c72-nsh.mp4",
   "size": 11150203,
-  "created_at": "2026-09-28T07:08:44Z"
+  "content_type": "video/mp4",
+  "created_at": "2026-09-29T21:14:21Z"
 }

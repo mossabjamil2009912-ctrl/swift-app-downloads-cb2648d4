@@ -1,9 +1,11 @@
 {
   "version": 1,
-  "asset_id": "7a5c2356-4a0f-4119-b604-a10d61db6d91",
-  "project_id": "f5b4429a-1e9b-4c82-a663-d97fcb5aa16f",
-  "url": "/__l5e/assets-v1/7a5c2356-4a0f-4119-b604-a10d61db6d91/lipower-2012emh.mp4",
+  "asset_id": "c9b060bc-4bed-4eb2-996c-c7c9f113714c",
+  "project_id": "3a339321-7177-4489-bf9f-a9f1851360ee",
+  "url": "/__l5e/assets-v1/c9b060bc-4bed-4eb2-996c-c7c9f113714c/lipower-2012emh.mp4",
+  "r2_key": "a/v1/3a339321-7177-4489-bf9f-a9f1851360ee/c9b060bc-4bed-4eb2-996c-c7c9f113714c/lipower-2012emh.mp4",
   "original_filename": "lipower-2012emh.mp4",
   "size": 8836054,
-  "created_at": "2026-09-28T14:59:28Z"
+  "content_type": "video/mp4",
+  "created_at": "2026-09-29T21:13:34Z"
 }

@@ -1,9 +1,11 @@
 {
   "version": 1,
-  "asset_id": "faa1d39b-f685-4f9f-923a-a0446d1e0daa",
-  "project_id": "87159b47-10e5-4038-a3f9-e157ee9cd6da",
-  "url": "/__l5e/assets-v1/faa1d39b-f685-4f9f-923a-a0446d1e0daa/pylontech-rv12100ch.mp4",
+  "asset_id": "f560348c-f98e-43ce-826b-f2f14beebc3a",
+  "project_id": "3a339321-7177-4489-bf9f-a9f1851360ee",
+  "url": "/__l5e/assets-v1/f560348c-f98e-43ce-826b-f2f14beebc3a/pylontech-rv12100ch.mp4",
+  "r2_key": "a/v1/3a339321-7177-4489-bf9f-a9f1851360ee/f560348c-f98e-43ce-826b-f2f14beebc3a/pylontech-rv12100ch.mp4",
   "original_filename": "pylontech-rv12100ch.mp4",
   "size": 8329074,
-  "created_at": "2026-09-28T20:33:24Z"
+  "content_type": "video/mp4",
+  "created_at": "2026-09-29T21:13:57Z"
 }
