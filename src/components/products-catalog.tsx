@@ -323,10 +323,20 @@ function ProductDetail({ product, onOpen, onBack, backLabel }: { product: Produc
   const video = useMemo(() => getProductVideo(product.id), [product.id]);
   const [reelDone, setReelDone] = useState(!video);
   useEffect(() => { setReelDone(!getProductVideo(product.id)); }, [product.id]);
-  useScreenVoice(
-    `catalog-product-${product.id}`,
-    reelDone ? `${product.name} من ${product.brand}. الموديل ${product.model}. ${product.description}` : "",
-  );
+  // بعد الفيديو: لا نكرّر الاسم والموديل والقدرة والمواصفات (شرحها الفيديو)، بل المميزات والاستخدامات فقط.
+  const afterVideoText = useMemo(() => {
+    if (video) {
+      const feats = product.features.slice(0, 3).join("، ");
+      const uses = product.uses.slice(0, 3).join("، ");
+      return [
+        feats ? `أبرز المميزات: ${feats}.` : "",
+        uses ? `الاستخدامات: ${uses}.` : "",
+        product.suitableFor,
+      ].filter(Boolean).join(" ");
+    }
+    return `${product.name} من ${product.brand}. الموديل ${product.model}. ${product.description}`;
+  }, [product, video]);
+  useScreenVoice(`catalog-product-${product.id}`, reelDone ? afterVideoText : "");
   const [viewFile, setViewFile] = useState<ProductFile | null>(null);
   const [shareOpen, setShareOpen] = useState(false);
   const summaryRows = useMemo(() => quickSpecs(product, 6), [product]);
