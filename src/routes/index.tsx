@@ -1383,7 +1383,7 @@ function ServiceCard({ image, icon, title, description, action, tone, onClick }:
   const btn = tone === "skyline" ? "bg-navy-soft text-navy" : circle;
   return (
     <button type="button" onClick={onClick} aria-label={title} className="group flex flex-col overflow-hidden rounded-xl border border-border bg-card text-right shadow-sm transition hover:shadow-md">
-      <span data-photo-frame className="block aspect-[16/6] w-full overflow-hidden bg-muted lg:aspect-[16/7]"><img data-photo src={image} alt={title} loading="eager" decoding="async" width={1280} height={560} className="size-full object-cover transition duration-500 group-hover:scale-[1.03]" /></span>
+      <span data-photo-frame className="block aspect-[16/9] w-full overflow-hidden bg-muted"><img data-photo src={image} alt={title} loading="eager" decoding="async" width={1280} height={720} className="size-full object-cover transition duration-500 group-hover:scale-[1.03]" /></span>
       <span className="relative flex flex-1 flex-col px-2 pb-2 pt-4 text-center lg:px-3 lg:pb-2.5 lg:pt-5">
         <span className={`absolute -top-3 right-1/2 grid size-6 translate-x-1/2 place-items-center rounded-full border-2 border-card shadow-md lg:size-8 ${circle} [&_svg]:size-3 lg:[&_svg]:size-4`}>{icon}</span>
         <span className="text-[11px] font-black leading-tight text-navy lg:text-[15px]">{title}</span>
@@ -1770,8 +1770,8 @@ function OptionGrid({ options, selected, projectCards = false, energyCards = fal
           const inactive = /قريباً/.test(option.title);
           return (
             <button key={`${option.id}-${index}`} type="button" onClick={() => onSelect(option.id)} className={`group overflow-hidden rounded-lg border bg-card text-right shadow-sm transition hover:-translate-y-0.5 hover:shadow-lg ${index === 1 ? "border-brand ring-1 ring-brand" : "border-border"}`}>
-              <span data-photo-frame className="relative block aspect-[1.45/1] w-full overflow-hidden border-b border-border bg-muted">
-                <img data-photo src={visual.image} alt="" loading="eager" decoding="async" fetchPriority="high" className={`size-full object-contain p-1 transition duration-500 group-hover:scale-[1.03] ${inactive ? "opacity-65" : ""}`} />
+              <span data-photo-frame className="relative block aspect-[16/9] w-full overflow-hidden border-b border-border bg-muted">
+                <img data-photo src={visual.image} alt="" loading="eager" decoding="async" fetchPriority="high" className={`size-full object-cover transition duration-500 group-hover:scale-[1.03] ${inactive ? "opacity-65" : ""}`} />
                 {inactive && <span className="absolute right-2 top-2 rounded-full bg-overlay/55 px-2 py-0.5 text-[10px] font-bold text-brand-foreground">قريباً</span>}
                 <span className={`absolute -bottom-4 right-3 grid size-10 place-items-center rounded-full border-[3px] border-card ${index === 1 ? "bg-brand text-brand-foreground" : "bg-secondary text-skyline"}`}><Icon className="size-4" /></span>
               </span>
