@@ -358,6 +358,33 @@ function spokenModel(model: string) {
   return null;
 }
 
+/** كلمة نوع المنتج كما تُنطق. */
+const KIND_WORD: Record<string, string> = {
+  panels: "لوح شمسي",
+  inverters: "إنفرتر",
+  batteries: "بطارية ليثيوم",
+};
+
+/**
+ * التعليق الصوتي المصاحب للفيديو: نوع المنتج والعلامة، ثم الموديل، ثم القدرة/السعة،
+ * ثم المواصفات الرئيسية كما تظهر على الشاشة. المميزات والاستخدامات تُشرح بعد الفيديو.
+ */
+export function videoIntroNarration(
+  p: { brand: string; model: string; power: string; category: string },
+  video: ProductVideo,
+) {
+  const kind = KIND_WORD[p.category] ?? "منتج";
+  const brand = spokenName(p.brand);
+  const model = spokenModel(p.model);
+  const power = spokenValue(p.power);
+  const powerWord = p.category === "batteries" ? "بسعة" : "بقدرة";
+  const head = `${kind} من ${brand}${model ? `، ${model}` : ""}، ${powerWord} ${power}.`;
+  const specs = video.cues
+    .map((c) => `${c.label.replace(/\bPmax\b/gi, "").trim()} ${spokenValue(c.value)}`)
+    .join("، ");
+  return `${head} ${specs}.`;
+}
+
 /** نص التعليق الصوتي العربي لفيديو المنتج: الاسم ثم أهم المواصفات كما في الكتالوج. */
 export function videoNarration(title: string, video: ProductVideo) {
   const [rawName, rawModel] = title.split("—").map((p) => p.trim());
