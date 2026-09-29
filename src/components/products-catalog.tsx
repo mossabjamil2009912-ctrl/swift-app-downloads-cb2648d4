@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { ArrowRight, BatteryCharging, Check, ChevronDown, Copy, Download, Eye, FileText, Gauge, Info, Layers, Link2, ListChecks, MessageCircle, Play, Share2, Sparkles, Sun, Users, Wrench, X, Zap } from "lucide-react";
 import QRCode from "qrcode";
 import { CATEGORIES, findProduct, matchCompatibleProducts, productsByCategory, quickSpecs, type Product, type ProductCategory, type ProductFile } from "@/lib/products-data";
-import { isVoiceOn, isVoicePlatform, speakScreen, stopSpeaking } from "@/lib/voice-guide";
+import { isVoiceOn, isVoicePlatform, speakScreen, speakScreenAfterCurrent, stopSpeaking } from "@/lib/voice-guide";
 import ProductVideoPlayer from "@/components/product-video";
 import { getProductVideo, videoIntroNarration } from "@/lib/product-video";
 
@@ -19,14 +19,18 @@ const CAT_BIG_ICON: Record<ProductCategory, ReactNode> = {
   batteries: <BatteryCharging className="size-10 lg:size-12" />,
 };
 
-/** نطق الشاشة — على سطح المكتب فقط ومع تفعيل المرشد الصوتي. */
-function useScreenVoice(key: string, text: string) {
+/**
+ * نطق الشاشة — على سطح المكتب فقط ومع تفعيل المرشد الصوتي.
+ * مع continueAfter يكمل الشرح مباشرة بعد الجملة الجارية (تعليق الفيديو) بلا قطع ولا صمت.
+ */
+function useScreenVoice(key: string, text: string, continueAfter = false) {
   useEffect(() => {
     if (!text) return;
     if (!isVoicePlatform() || !isVoiceOn()) return;
-    speakScreen(key, text);
+    if (continueAfter) speakScreenAfterCurrent(key, text);
+    else speakScreen(key, text);
     return () => stopSpeaking();
-  }, [key, text]);
+  }, [key, text, continueAfter]);
 }
 
 export default function ProductsCatalog({ productId, onOpen, onBack, returnTo }: { productId: string | null; onOpen: (id: string | null) => void; onBack: () => void; returnTo?: { label: string; onReturn: () => void } | null }) {
@@ -323,12 +327,14 @@ function ProductDetail({ product, onOpen, onBack, backLabel }: { product: Produc
   const video = useMemo(() => getProductVideo(product.id), [product.id]);
   const [reelDone, setReelDone] = useState(!video);
   useEffect(() => { setReelDone(!getProductVideo(product.id)); }, [product.id]);
-  // بعد الفيديو: لا نكرّر الاسم والموديل والقدرة والمواصفات (شرحها الفيديو)، بل المميزات والاستخدامات فقط.
+  // بعد الفيديو: لا نكرّر الاسم والموديل والقدرة والمواصفات (شرحها الفيديو)،
+  // بل نكمل بقية صفحة الوصف: نبذة المنتج، المميزات، الاستخدامات، ولمن يناسب.
   const afterVideoText = useMemo(() => {
     if (video) {
-      const feats = product.features.slice(0, 3).join("، ");
-      const uses = product.uses.slice(0, 3).join("، ");
+      const feats = product.features.slice(0, 4).join("، ");
+      const uses = product.uses.slice(0, 4).join("، ");
       return [
+        product.about,
         feats ? `أبرز المميزات: ${feats}.` : "",
         uses ? `الاستخدامات: ${uses}.` : "",
         product.suitableFor,
@@ -336,7 +342,7 @@ function ProductDetail({ product, onOpen, onBack, backLabel }: { product: Produc
     }
     return `${product.name} من ${product.brand}. الموديل ${product.model}. ${product.description}`;
   }, [product, video]);
-  useScreenVoice(`catalog-product-${product.id}`, reelDone ? afterVideoText : "");
+  useScreenVoice(`catalog-product-${product.id}`, reelDone ? afterVideoText : "", !!video);
   const [viewFile, setViewFile] = useState<ProductFile | null>(null);
   const [shareOpen, setShareOpen] = useState(false);
   const summaryRows = useMemo(() => quickSpecs(product, 6), [product]);
