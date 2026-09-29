@@ -9,6 +9,8 @@ import p9 from "@/assets/products/p9.webp";
 import p11 from "@/assets/products/p11.webp";
 import p12 from "@/assets/products/p12.webp";
 import p13 from "@/assets/products/p13.webp";
+import p15 from "@/assets/products/p15.webp";
+import p16 from "@/assets/products/p16.webp";
 import p18 from "@/assets/products/p18.webp";
 import p19 from "@/assets/products/p19.webp";
 import lithium12v314ah from "@/assets/products/lithium-12v-314ah.png.asset.json";
@@ -27,6 +29,8 @@ const ITEM_IMAGES: Record<string, string> = {
   "لوح سنتك N-Type 595 وات": p8,
   "لوح سنتك N-Type 720 وات": p9,
 
+  "إنفرتر 1.6 كيلو سنجل فاز": p15,
+  "إنفرتر 6.2 كيلو سنجل فاز": p16,
   "إنفرتر 8 كيلو سنجل فاز": p13,
   "إنفرتر 12 كيلو سنجل فاز": p13,
   "إنفرتر 12 كيلو ثري فاز": p18,
