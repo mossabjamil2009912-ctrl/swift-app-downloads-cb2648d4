@@ -29,12 +29,19 @@ function useScreenVoice(key: string, text: string) {
   }, [key, text]);
 }
 
-export default function ProductsCatalog({ productId, onOpen, onBack }: { productId: string | null; onOpen: (id: string | null) => void; onBack: () => void }) {
+export default function ProductsCatalog({ productId, onOpen, onBack, returnTo }: { productId: string | null; onOpen: (id: string | null) => void; onBack: () => void; returnTo?: { label: string; onReturn: () => void } | null }) {
   const product = productId ? findProduct(productId) : undefined;
   const [category, setCategory] = useState<ProductCategory | null>(product ? product.category : null);
 
   if (product) {
-    return <ProductDetail product={product} onOpen={onOpen} onBack={() => { setCategory(product.category); onOpen(null); }} />;
+    return (
+      <ProductDetail
+        product={product}
+        onOpen={onOpen}
+        onBack={returnTo ? returnTo.onReturn : () => { setCategory(product.category); onOpen(null); }}
+        backLabel={returnTo ? returnTo.label : undefined}
+      />
+    );
   }
 
   if (category) {
@@ -42,6 +49,7 @@ export default function ProductsCatalog({ productId, onOpen, onBack }: { product
   }
   return <CategoriesScreen onPick={setCategory} onBack={onBack} />;
 }
+
 
 function BackButton({ onClick, label }: { onClick: () => void; label: string }) {
   return (
@@ -280,7 +288,7 @@ function ShareSheet({ product, onClose }: { product: Product; onClose: () => voi
   );
 }
 
-function ProductDetail({ product, onOpen, onBack }: { product: Product; onOpen: (id: string) => void; onBack: () => void }) {
+function ProductDetail({ product, onOpen, onBack, backLabel }: { product: Product; onOpen: (id: string) => void; onBack: () => void; backLabel?: string | undefined }) {
   // فيديو تعريفي حقيقي داخل معرض ACTES يبدأ أولاً (إن توفر لهذا الموديل)، ثم تظهر تفاصيل المنتج.
   const video = useMemo(() => getProductVideo(product.id), [product.id]);
   const [reelDone, setReelDone] = useState(!video);
@@ -302,7 +310,8 @@ function ProductDetail({ product, onOpen, onBack }: { product: Product; onOpen: 
       <div className="screen-enter w-full space-y-4 pb-4">
 
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <BackButton onClick={onBack} label={CATEGORIES.find((c) => c.id === product.category)?.title ?? "منتجاتنا"} />
+          <BackButton onClick={onBack} label={backLabel ?? CATEGORIES.find((c) => c.id === product.category)?.title ?? "منتجاتنا"} />
+
           <span className="text-[11px] font-black text-skyline">{product.brand}</span>
         </div>
         <ProductVideoPlayer key={product.id} video={video} title={`${product.name} — ${product.model}`} onFinish={() => setReelDone(true)} />
@@ -314,7 +323,7 @@ function ProductDetail({ product, onOpen, onBack }: { product: Product; onOpen: 
   return (
     <div className="screen-enter w-full space-y-4 pb-4">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <BackButton onClick={onBack} label={CATEGORIES.find((c) => c.id === product.category)?.title ?? "منتجاتنا"} />
+        <BackButton onClick={onBack} label={backLabel ?? CATEGORIES.find((c) => c.id === product.category)?.title ?? "منتجاتنا"} />
         <div className="flex items-center gap-2">
           {video ? (
             <button type="button" onClick={() => setReelDone(false)} className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1.5 text-xs font-bold text-navy shadow-sm transition hover:bg-muted">
