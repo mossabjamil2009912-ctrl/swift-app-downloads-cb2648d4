@@ -8,6 +8,7 @@ import { prepareSpeech, prepareWelcome, quoteSpeech, replaySpeech, respeakScreen
 import { startVoiceWarmup } from "@/lib/voice-warmup";
 import { preloadAppImages } from "@/lib/preload-images";
 import PvsystStudy from "@/components/pvsyst-study";
+import SldDiagram from "@/components/sld-diagram";
 
 import { enterFullscreen, isFullscreen, toggleFullscreen } from "@/lib/fullscreen";
 import actesSplashLogo from "@/assets/actes-logo-white.webp";
@@ -1554,7 +1555,9 @@ function QuoteWorkspace({ view, session, step, draft, setDraft, onPick, onBack, 
             {view.specs.length > 0 && <SystemSpecs specs={view.specs} hint={[session["phase_type"], session["system_type"]].filter(Boolean).join(" ")} onOpenProduct={onOpenProduct} />}
             {view.quote && <QuoteCard quote={view.quote} />}
             {view.study && !studyFresh && <PvsystStudy study={view.study} />}
-            {view.sld && <DetailCard icon={<Network />} title="المخطط الكهربائي أحادي الخط (SLD)" number={view.sld.number} rows={view.sld.rows} />}
+            {view.sld && (view.sld.params
+              ? <SldDiagram params={view.sld.params} number={view.sld.number} />
+              : <DetailCard icon={<Network />} title="المخطط الكهربائي أحادي الخط (SLD)" number={view.sld.number} rows={view.sld.rows} />)}
             {(() => {
               const visibleDocs = view.quote
                 ? view.docs.filter((doc) => !(doc.url && view.quote?.fileUrl && doc.url === view.quote.fileUrl) && !/\.pdf$/i.test(doc.name))

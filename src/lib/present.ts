@@ -37,7 +37,7 @@ export type View = {
     /** الدراسة طُلبت في هذه الخطوة تحديداً، فتُعرض في شاشة مستقلة */
     fresh: boolean;
   } | null;
-  sld: { number: string; rows: { label: string; value: string }[] } | null;
+  sld: { number: string; rows: { label: string; value: string }[]; params: Record<string, unknown> | null } | null;
   images: { url: string; caption?: string | undefined }[];
   videos: { url: string; caption?: string | undefined }[];
   docs: { name: string; caption?: string | undefined; url?: string | undefined }[];
@@ -251,7 +251,7 @@ export function buildView(r: BotResult, step: string): View {
     add("الانفرتر", sldp?.['inv_name'] || sldp?.['inv_model']);
     add("نوع الطور", r['phase_type']);
     add("عدد الألواح", sldp?.['panel_qty']);
-    sld = { number: String(sldp?.['quote_number'] || r.quote_number || ""), rows };
+    sld = { number: String(sldp?.['quote_number'] || sldp?.['ref'] || r.quote_number || ""), rows, params: sldp };
   }
 
   let heading = "";
