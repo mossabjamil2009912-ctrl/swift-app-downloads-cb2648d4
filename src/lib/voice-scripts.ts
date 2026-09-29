@@ -5,9 +5,9 @@ import type { Lang } from "@/lib/i18n";
 export type Script = { ar: string; en: string; zh: string; input?: boolean };
 
 export const WELCOME: Record<Lang, string> = {
-  ar: "أَهْلًا بِكَ فِي أَكْتِسْ لِأَنْظِمَةِ الطَّاقَةِ وَحُلُولِهَا. تَفَضَّلْ بِاخْتِيَارِ الخِدْمَةِ الَّتِي تُرِيدُهَا.",
-  en: "Welcome to ACTES energy systems. Please choose the service you want.",
-  zh: "欢迎使用ACTES能源系统。请选择您想要的服务。",
+  ar: "أَهْلًا بِكَ فِي نِظَامِ أَكْتِسْ لِأَنْظِمَةِ الطَّاقَةِ وَحُلُولِهَا. تَفَضَّلْ بِاخْتِيَارِ الخِدْمَةِ الَّتِي تُرِيدُهَا.",
+  en: "Welcome to the ACTES system for energy systems and solutions. Please choose the service you want.",
+  zh: "欢迎使用ACTES系统，专注能源系统与解决方案。请选择您想要的服务。",
 };
 
 const S = (ar: string, en: string, zh: string, input = false): Script => ({ ar, en, zh, input });
