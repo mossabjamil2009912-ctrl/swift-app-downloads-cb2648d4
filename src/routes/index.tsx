@@ -1534,6 +1534,15 @@ function QuoteWorkspace({ view, session, step, draft, setDraft, onPick, onBack, 
                 {visibleOptions.length > 0 && <OptionGrid options={visibleOptions} selected={selected} projectCards={isProjectSelection} onSelect={(value) => { onPick(value); }} />}
               </div>
             )}
+
+            {step === "done" && (
+              <div className="mt-6 border-t border-border pt-5">
+                <button type="button" onClick={onHome} className="inline-flex w-full items-center justify-center gap-2 rounded-md bg-skyline px-6 py-3 text-sm font-bold text-skyline-foreground transition hover:opacity-90 sm:w-auto">
+                  <Home className="size-4" /> العودة إلى الشاشة الرئيسية
+                </button>
+              </div>
+            )}
+
               </>
             )}
           </div>
