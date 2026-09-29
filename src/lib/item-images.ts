@@ -46,9 +46,8 @@ function normalize(text: string): string {
     .trim();
 }
 
-/** صورة الصنف إن وُجدت صورة حقيقية معتمدة له، وإلا undefined. */
+/** صورة الصنف إن وُجدت صورة حقيقية معتمدة له، وإلا undefined (لا صور للقوائم/الفئات). */
 export function itemImage(title: string): string | undefined {
-  const key = normalize(title);
-  if (ITEM_IMAGES[key]) return ITEM_IMAGES[key];
-  return ITEM_CATEGORY_IMAGES[key];
+  return ITEM_IMAGES[normalize(title)];
 }
+
