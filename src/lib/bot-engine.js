@@ -2829,7 +2829,6 @@ export function runStateMachine(__session, __parsed, __itemPrices) {
     var s = ' المنظومة الصناعية المقترحة\n' + SEP + '\n';
     if (ind.name) { s += ' المشروع: *' + ind.name + '\n'; }
     if (ind.c) { s += ' الموقع: ' + ind.c + '\n'; }
-    s += ' النشاط: ' + (ind.act || '-') + '\n';
     s += ' الهدف: ' + (IND_GOAL[ind.goal] || '-') + '\n\n';
     s += 'أولاً: التشغيل والأحمال\n';
     s += '• الورديات: ' + ind.shifts.length + ' — ' + hs.total + ' ساعة/يوم (نهار ' + hs.day + ' | ليل ' + hs.night + ')\n';
@@ -2857,7 +2856,7 @@ export function runStateMachine(__session, __parsed, __itemPrices) {
   function notifInd(z, ind, tag) {
     var hs = indHoursSummary(ind);
     var s = AC + ' — ' + (tag || 'طلب منظومة صناعية') + (quote_number ? ' ' + quote_number : '') + '\n' + SEP + '\n';
-    s += 'المشروع: ' + (ind.name || '-') + '\nالموقع: ' + (ind.c || city || '-') + '\nالنشاط: ' + (ind.act || '-') + '\n';
+    s += 'المشروع: ' + (ind.name || '-') + '\nالموقع: ' + (ind.c || city || '-') + '\n';
     s += 'الورديات: ' + ind.shifts.length + ' (' + hs.total + ' س/يوم نهار ' + hs.day + ' / ليل ' + hs.night + ')\n';
     for (var i = 0; i < ind.shifts.length; i++) { s += '  - ' + indHH(ind.shifts[i][0]) + ' → ' + indHH(ind.shifts[i][1]) + '\n'; }
     s += 'الحمل التشغيلي: ' + (ind.tot || '-') + ' kW | أكبر ماكينة: ' + (ind.maxm || '-') + ' kW | محرك إقلاع عالٍ: ' + (ind.motorkw ? ind.motorkw + ' kW' : 'لا') + '\n';
