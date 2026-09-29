@@ -29,12 +29,19 @@ function useScreenVoice(key: string, text: string) {
   }, [key, text]);
 }
 
-export default function ProductsCatalog({ productId, onOpen, onBack }: { productId: string | null; onOpen: (id: string | null) => void; onBack: () => void }) {
+export default function ProductsCatalog({ productId, onOpen, onBack, returnTo }: { productId: string | null; onOpen: (id: string | null) => void; onBack: () => void; returnTo?: { label: string; onReturn: () => void } | null }) {
   const product = productId ? findProduct(productId) : undefined;
   const [category, setCategory] = useState<ProductCategory | null>(product ? product.category : null);
 
   if (product) {
-    return <ProductDetail product={product} onOpen={onOpen} onBack={() => { setCategory(product.category); onOpen(null); }} />;
+    return (
+      <ProductDetail
+        product={product}
+        onOpen={onOpen}
+        onBack={returnTo ? returnTo.onReturn : () => { setCategory(product.category); onOpen(null); }}
+        backLabel={returnTo ? returnTo.label : undefined}
+      />
+    );
   }
 
   if (category) {
@@ -42,6 +49,7 @@ export default function ProductsCatalog({ productId, onOpen, onBack }: { product
   }
   return <CategoriesScreen onPick={setCategory} onBack={onBack} />;
 }
+
 
 function BackButton({ onClick, label }: { onClick: () => void; label: string }) {
   return (
