@@ -185,10 +185,10 @@ export function SldSvg({ m }: { m: SldModel }) {
                 {[0, 1, 2].map((k) => (
                   <PvSymbol key={k} x={xPv + k * 30} y={y} w={26} h={22} />
                 ))}
-                <text x={xPv + 96} y={y + 15} fontFamily={F} fontSize={8.4} fill={C.ink}>
+                <text x={xPv + 92} y={y + 6} fontFamily={F} fontSize={8.4} fill={C.ink}>
                   {`String ${i + 1} — ${pv.perString} × ${pv.wp} Wp`}
                 </text>
-                <line x1={xPv + wPv - 36} y1={y + 11} x2={dc ? xDc : xInv} y2={y + 11} stroke={C.dc} strokeWidth={1.5} />
+                <line x1={xPv + 90} y1={y + 11} x2={dc ? xDc : xInv} y2={y + 11} stroke={C.dc} strokeWidth={1.5} />
                 {pv.strings > drawnStrings && i === drawnStrings - 1 && (
                   <text x={xPv} y={y + 34} fontFamily={F} fontSize={8.4} fontStyle="italic" fill={C.soft}>
                     {`typical — total ${pv.strings} strings × ${pv.perString} modules (${pv.qty} modules)`}
@@ -245,49 +245,55 @@ export function SldSvg({ m }: { m: SldModel }) {
           <text x={xInv + wInv / 2} y={invY + invH + 12} textAnchor="middle" fontFamily={F} fontSize={8.2} fill={C.soft}>
             {inv.model}
           </text>
-          <text x={xInv - 4} y={dcY - 4} textAnchor="end" fontFamily={F} fontSize={7.6} fill={C.dc}>DC IN</text>
-          <text x={xInv + wInv + 4} y={dcY - 4} fontFamily={F} fontSize={7.6} fill={C.ac}>AC OUT</text>
+          <text x={xInv - 6} y={dcY + 12} textAnchor="end" fontFamily={F} fontSize={7.6} fill={C.dc}>DC IN</text>
+          <text x={xInv + wInv + 6} y={dcY + 12} fontFamily={F} fontSize={7.6} fill={C.ac}>AC OUT</text>
         </>
       )}
 
       {/* ── بنك البطاريات (فقط إذا كانت ضمن الأصناف) ──────────────────────── */}
-      {bat && inv && (
-        <>
-          <Block
-            x={xInv - 210}
-            y={batY - 30}
-            w={176}
-            h={72}
-            title="BATTERY BANK"
-            lines={[
-              `${bat.qty} × ${bat.kwh} kWh = ${bat.totalKwh} kWh`,
-              bat.vdc ? `Nominal ${bat.vdc} V DC` : "",
-              bat.current ? `Max current ≈ ${bat.current} A` : "",
-            ].filter(Boolean)}
-            accent={C.dc}
-          />
-          <BatterySymbol x={xInv - 196} y={batY + 32} />
-          <text x={xInv - 210} y={batY + 58} fontFamily={F} fontSize={8} fill={C.soft}>{bat.model}</text>
-          {m.batBox ? (
-            <>
-              <Block x={xInv - 8} y={batY - 22} w={100} h={56} title="BATTERY BOX" lines={[m.batBox.rating]} accent={C.dc} />
-              <line x1={xInv - 34} y1={batY} x2={xInv - 8} y2={batY} stroke={C.dc} strokeWidth={2} />
-              <line x1={xInv + 92} y1={batY} x2={xInv + wInv / 2} y2={batY} stroke={C.dc} strokeWidth={2} />
-              <BreakerSymbol x={xInv + 42} y={batY + 4} />
-            </>
-          ) : (
-            <>
-              <line x1={xInv - 34} y1={batY} x2={xInv + wInv / 2} y2={batY} stroke={C.dc} strokeWidth={2} />
-              {bat.breakerA && <BreakerSymbol x={xInv + 20} y={batY + 4} />}
-              {bat.breakerA && (
-                <text x={xInv + 30} y={batY + 26} fontFamily={F} fontSize={7.8} fill={C.ink}>{`DC ${bat.breakerA} A 2P`}</text>
-              )}
-            </>
-          )}
-          <line x1={xInv + wInv / 2} y1={batY} x2={xInv + wInv / 2} y2={invY + invH} stroke={C.dc} strokeWidth={2} />
-          <WireTag x={xInv + wInv / 2 + 22} y={batY - 8} text={m.cables.find((c) => /BAT/.test(c.route))?.tag || "W3"} color={C.dc} />
-        </>
-      )}
+      {bat && inv && (() => {
+        const riser = xInv + wInv / 2;
+        const boxX = xInv - 128;
+        const bankX = xInv - 336;
+        const bankW = 184;
+        return (
+          <>
+            <Block
+              x={bankX}
+              y={batY - 30}
+              w={bankW}
+              h={66}
+              title="BATTERY BANK"
+              lines={[
+                `${bat.qty} × ${bat.kwh} kWh = ${bat.totalKwh} kWh`,
+                bat.vdc ? `Nominal ${bat.vdc} V DC` : "",
+                bat.current ? `Max current ≈ ${bat.current} A` : "",
+              ].filter(Boolean)}
+              accent={C.dc}
+            />
+            <BatterySymbol x={bankX + bankW + 14} y={batY} />
+            <text x={bankX} y={batY + 50} fontFamily={F} fontSize={8} fill={C.soft}>{bat.model}</text>
+            <line x1={bankX + bankW} y1={batY} x2={m.batBox ? boxX : riser} y2={batY} stroke={C.dc} strokeWidth={2} />
+            {m.batBox ? (
+              <>
+                <Block x={boxX} y={batY - 28} w={108} h={62} title="BATTERY BOX" lines={[m.batBox.rating]} accent={C.dc} />
+                <BreakerSymbol x={boxX + 78} y={batY + 6} />
+                <line x1={boxX + 108} y1={batY} x2={riser} y2={batY} stroke={C.dc} strokeWidth={2} />
+              </>
+            ) : (
+              bat.breakerA && (
+                <>
+                  <BreakerSymbol x={boxX + 40} y={batY + 4} />
+                  <text x={boxX + 50} y={batY + 26} fontFamily={F} fontSize={7.8} fill={C.ink}>{`DC ${bat.breakerA} A 2P`}</text>
+                </>
+              )
+            )}
+            <line x1={riser} y1={batY} x2={riser} y2={invY + invH} stroke={C.dc} strokeWidth={2} />
+            <WireTag x={riser + 20} y={batY - 8} text={m.cables.find((c) => /BAT/.test(c.route))?.tag || "W3"} color={C.dc} />
+            <text x={riser + 6} y={invY + invH + 26} fontFamily={F} fontSize={7.6} fill={C.dc}>BAT</text>
+          </>
+        );
+      })()}
 
       {/* ── لوحة حماية الـ AC ─────────────────────────────────────────────── */}
       {ac && inv && (
@@ -378,7 +384,7 @@ export function SldSvg({ m }: { m: SldModel }) {
           ))}
           <EarthSymbol x={xOut + wOut - 40} y={earthY + 8} />
           <text x={xOut + wOut - 40} y={earthY - 8} textAnchor="middle" fontFamily={F} fontSize={8.4} fill={C.earth}>
-            {m.earth.name}
+            EARTHING PIT
           </text>
           <text x={xPv} y={earthY - 8} fontFamily={F} fontSize={8.4} fontWeight={700} fill={C.earth}>
             PE — EARTH BONDING BUS 1×16 mm²
