@@ -50,7 +50,10 @@ export type ProductFile = { kind: "Catalog" | "Datasheet" | "User Manual" | "Ins
 
 export type Product = {
   id: string;
+  /** معرّف السلسلة الأصلية عندما يكون هذا المنتج موديلاً محدداً منها (للفيديو والملفات). */
+  baseId?: string;
   category: ProductCategory;
+
   brand: string;
   name: string;
   model: string;
