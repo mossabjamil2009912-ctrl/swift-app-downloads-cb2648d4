@@ -102,9 +102,9 @@ export function buildDatasheetHtml(product: Product): string {
   .dt .v{border:.5pt solid #cfd6e4;padding:.6mm 2mm;font-weight:600}
   .dt tr{page-break-inside:avoid}
 
-  .ft{margin-top:5mm;border-top:1pt solid #14203a;padding-top:2mm;display:flex;justify-content:space-between;font-size:7.4pt;color:#5a6580}
+  .ft{margin-top:3mm;page-break-inside:avoid;border-top:1pt solid #14203a;padding-top:2mm;display:flex;justify-content:space-between;font-size:7.4pt;color:#5a6580}
   .ft b{color:#14203a}
-  .note{margin-top:2mm;font-size:7.2pt;color:#7a8398}
+  .note{margin-top:1.5mm;page-break-inside:avoid;font-size:7.2pt;color:#7a8398}
 </style></head><body>
 
 <div class="sheet">
