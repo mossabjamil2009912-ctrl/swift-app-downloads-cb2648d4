@@ -25,9 +25,16 @@ export function hasModelDatasheet(product: Product): boolean {
   return !/[–—-]|إلى/.test(product.power);
 }
 
+/** رمز الموديل وحده بلا ذكر بقية موديلات السلسلة بين قوسين. */
+const modelCode = (product: Product) => product.model.replace(/\s*\([^)]*\)\s*/g, " ").trim();
+
+/** اسم تصنيف المنتج كما يظهر في بطاقة الكتالوج. */
+const categoryLabel = (product: Product) =>
+  product.category === "panels" ? "الألواح الشمسية" : product.category === "batteries" ? "البطاريات" : "الإنفرترات";
+
 /** اسم الملف المقترح عند الحفظ كـ PDF. */
 export function datasheetFileName(product: Product): string {
-  const model = product.model.replace(/[^A-Za-z0-9.\-]+/g, "-").replace(/(^-|-$)/g, "");
+  const model = modelCode(product).replace(/[^A-Za-z0-9.\-]+/g, "-").replace(/(^-|-$)/g, "");
   return `ACTES-Datasheet-${model}.pdf`;
 }
 
