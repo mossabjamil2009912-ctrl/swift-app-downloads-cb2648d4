@@ -987,8 +987,8 @@ function expandProduct(base: Product): Product[] {
       model: v.model,
       power: v.power,
       description: fixRanges(base.description, v.power) ?? base.description,
-      about: fixRanges(base.about, v.power),
-      suitableFor: fixRanges(base.suitableFor, v.power),
+      ...(base.about ? { about: fixRanges(base.about, v.power)! } : {}),
+      ...(base.suitableFor ? { suitableFor: fixRanges(base.suitableFor, v.power)! } : {}),
       specs: rows.length ? [{ title: `مواصفات موديل ${v.label}`, rows }, ...base.specs] : base.specs,
     };
   });
