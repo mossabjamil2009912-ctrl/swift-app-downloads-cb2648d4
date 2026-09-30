@@ -5,6 +5,7 @@ import { CATEGORIES, findProduct, matchCompatibleProducts, productsByCategory, q
 import { isVoiceOn, isVoicePlatform, speakScreen, speakScreenAfterCurrent, stopSpeaking } from "@/lib/voice-guide";
 import ProductVideoPlayer from "@/components/product-video";
 import { getProductVideo, videoIntroNarration } from "@/lib/product-video";
+import { hasModelDatasheet, openInverterDatasheet } from "@/lib/inverter-datasheet-pdf";
 
 
 // خدمة معلوماتية فقط — لا تحتوي أي زر بيع أو ربط بمسارات عروض الأسعار.
