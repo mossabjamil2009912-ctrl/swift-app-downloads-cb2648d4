@@ -99,28 +99,27 @@
 - الناتج يُحفظ في نفس المسار `src/assets/showroom/<id>.mp4` (يُحدَّث ملف `.asset.json` تلقائياً).
 - التكلفة التقريبية: ~6.09 رصيد للمقطع الواحد.
 
-### منجز بالحجم الحقيقي 1080p (5)
-`pylontech-rv12314` · `pylontech-rv12100ch` · `pylontech-rv12200` · `deye-sun-3-6k-sg04lp1` · `pylontech-powercube-m5a`
+### منجز بالحجم الحقيقي 1080p (6)
+`pylontech-rv12314` · `pylontech-rv12100ch` · `pylontech-rv12200` · `deye-sun-3-6k-sg04lp1` · `pylontech-powercube-m5a` · `pylontech-powercube-m1c`
 
 ### لا تحتاج إعادة توليد (7)
 - الألواح (لا تُوضع على منصة، أبعادها معتمدة): `suntech-stp595s-c72-nsh` · `suntech-stp720s-d66-nsh`
 - نسبها مقبولة أصلاً: `pylontech-fidus-battery-plus` · `hithium-heroee-maxpower-16` ·
   `deye-sun-29-9-50k-sg01hp3` (المرجع القياسي للمنصة) · `solis-s6-eh3p-12-20k-h` · `solis-s6-eh3p-29-9-50k-h`
 
-### المتبقي (9) — 3 في كل دفعة
+### المتبقي (8) — 3 في كل دفعة
 **الدفعة 1**
-1. `pylontech-powercube-m1c`
-2. `lipower-2012emh`
-3. `lipower-bz4024smhgw`
+1. `lipower-2012emh`
+2. `lipower-bz4024smhgw`
+3. `lipower-bz6248smh`
 
 **الدفعة 2**
-4. `lipower-bz6248smh`
-5. `solis-s6-eh2p-5-8k`
-6. `deye-sun-7-6-12k-sg02lp1`
+4. `solis-s6-eh2p-5-8k`
+5. `deye-sun-7-6-12k-sg02lp1`
+6. `deye-sun-14-20k-sg05lp3`
 
 **الدفعة 3**
-7. `deye-sun-14-20k-sg05lp3`
-8. `deye-sun-60-80k-sg02hp3`
-9. `solis-s6-eh3p-75-125k`
+7. `deye-sun-60-80k-sg02hp3`
+8. `solis-s6-eh3p-75-125k`
 
 
