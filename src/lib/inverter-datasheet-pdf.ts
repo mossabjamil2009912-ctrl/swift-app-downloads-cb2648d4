@@ -138,7 +138,7 @@ export function buildDatasheetHtml(product: Product): string {
         <tr><th>الموديل</th><td dir="ltr">${esc(modelCode(product))}</td></tr>
         <tr><th>القدرة الاسمية</th><td dir="ltr">${esc(product.power)}</td></tr>
         <tr><th>العلامة التجارية</th><td>${esc(product.brand)}</td></tr>
-        <tr><th>الفئة</th><td>الإنفرترات</td></tr>
+        <tr><th>الفئة</th><td>${esc(categoryLabel(product))}</td></tr>
         ${product.certificates ? `<tr><th>الشهادات</th><td style="font-weight:600">${esc(product.certificates)}</td></tr>` : ""}
       </table>
       <p class="about">${esc(product.about)}</p>
