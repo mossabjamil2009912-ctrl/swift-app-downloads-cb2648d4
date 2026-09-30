@@ -972,15 +972,15 @@ function expandProduct(base: Product): Product[] {
     const idx = base.modelTable ? base.modelTable.models.indexOf(v.key) : -1;
     const rows: [string, string][] =
       idx >= 0 && base.modelTable ? base.modelTable.rows.map((r) => [r.label, r.values[idx] ?? "—"] as [string, string]) : [];
+    const { modelTable: _omit, ...rest } = base;
     return {
-      ...base,
+      ...rest,
       id: `${base.id}--${variantSlug(v.key)}`,
       baseId: base.id,
       name: `${def.nameBase} ${v.label}`,
       model: v.model,
       power: v.power,
       specs: rows.length ? [{ title: `مواصفات موديل ${v.label}`, rows }, ...base.specs] : base.specs,
-      modelTable: undefined,
     };
   });
 }
