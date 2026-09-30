@@ -95,11 +95,11 @@ export function buildDatasheetHtml(product: Product): string {
   .cols>div{flex:1}
   ul{margin:0;padding-inline-start:5mm;font-size:8.2pt;line-height:1.7}
 
-  .dt{width:100%;border-collapse:collapse;font-size:8pt;margin-bottom:3mm;page-break-inside:auto}
-  .dt thead th{background:#14203a;color:#fff;padding:1.4mm 2mm;text-align:right;font-size:8.6pt;font-weight:800}
+  .dt{width:100%;border-collapse:collapse;font-size:7.1pt;margin-bottom:2mm;page-break-inside:auto}
+  .dt thead th{background:#14203a;color:#fff;padding:1mm 2mm;text-align:right;font-size:7.9pt;font-weight:800}
   .dt tbody tr:nth-child(even){background:#f6f8fb}
-  .dt .k{border:.5pt solid #cfd6e4;padding:1.1mm 2mm;text-align:right;width:52mm;font-weight:700;background:transparent}
-  .dt .v{border:.5pt solid #cfd6e4;padding:1.1mm 2mm;font-weight:600}
+  .dt .k{border:.5pt solid #cfd6e4;padding:.75mm 2mm;text-align:right;width:52mm;font-weight:700;background:transparent}
+  .dt .v{border:.5pt solid #cfd6e4;padding:.75mm 2mm;font-weight:600}
   .dt tr{page-break-inside:avoid}
 
   .ft{margin-top:5mm;border-top:1pt solid #14203a;padding-top:2mm;display:flex;justify-content:space-between;font-size:7.4pt;color:#5a6580}
