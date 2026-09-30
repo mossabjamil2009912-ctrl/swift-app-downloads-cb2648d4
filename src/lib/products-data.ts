@@ -965,6 +965,12 @@ const INVERTER_VARIANTS: Record<string, { nameBase: string; variants: VariantDef
 
 const variantSlug = (key: string) => key.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 
+/** يزيل نطاقات القدرة من النصوص ويستبدلها بالقدرة الصريحة للصنف. */
+function fixRanges(text: string | undefined, power: string): string | undefined {
+  if (!text) return text;
+  return text.replace(/(?:من\s*)?\d+(?:[.,]\d+)?\s*(?:–|—|-|إلى)\s*\d+(?:[.,]\d+)?\s*kW/gi, power);
+}
+
 function expandProduct(base: Product): Product[] {
   const def = INVERTER_VARIANTS[base.id];
   if (!def) return [base];
@@ -980,6 +986,9 @@ function expandProduct(base: Product): Product[] {
       name: `${def.nameBase} ${v.label}`,
       model: v.model,
       power: v.power,
+      description: fixRanges(base.description, v.power) ?? base.description,
+      ...(base.about ? { about: fixRanges(base.about, v.power)! } : {}),
+      ...(base.suitableFor ? { suitableFor: fixRanges(base.suitableFor, v.power)! } : {}),
       specs: rows.length ? [{ title: `مواصفات موديل ${v.label}`, rows }, ...base.specs] : base.specs,
     };
   });
