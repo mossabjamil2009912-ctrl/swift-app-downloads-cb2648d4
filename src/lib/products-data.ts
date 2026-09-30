@@ -874,12 +874,127 @@ export const PRODUCTS: Product[] = [
   },
 ];
 
+// ───────────── تقسيم سلاسل الإنفرترات إلى موديلات محددة القدرة ─────────────
+// لا نعرض نطاقات مثل «12–20kW»؛ كل قدرة تصبح صنفاً مستقلاً ببياناته من جدول موديلات الكتالوج.
+type VariantDef = { key: string; label: string; power: string; model: string };
+const INVERTER_VARIANTS: Record<string, { nameBase: string; variants: VariantDef[] }> = {
+  "deye-sun-3-6k-sg04lp1": {
+    nameBase: "إنفرتر هجين Deye أحادي الطور",
+    variants: [
+      { key: "3K-24-SM1", label: "3kW (بطارية 24V)", power: "3 kW", model: "SUN-3K-SG04LP1-24-EU-SM1" },
+      { key: "3K-SM1", label: "3kW (بطارية 48V)", power: "3 kW", model: "SUN-3K-SG04LP1-EU-SM1" },
+      { key: "3.6K-SM2", label: "3.6kW", power: "3.6 kW", model: "SUN-3.6K-SG04LP1-EU-SM2" },
+      { key: "5K-SM2", label: "5kW", power: "5 kW", model: "SUN-5K-SG04LP1-EU-SM2" },
+      { key: "6K-SM2", label: "6kW", power: "6 kW", model: "SUN-6K-SG04LP1-EU-SM2" },
+    ],
+  },
+  "deye-sun-7-6-12k-sg02lp1": {
+    nameBase: "إنفرتر هجين Deye أحادي الطور",
+    variants: [
+      { key: "7.6K", label: "7.6kW", power: "7.6 kW", model: "SUN-7.6K-SG02LP1-EU-AM2-P" },
+      { key: "8K", label: "8kW", power: "8 kW", model: "SUN-8K-SG02LP1-EU-AM2-P" },
+      { key: "10K", label: "10kW", power: "10 kW", model: "SUN-10K-SG02LP1-EU-AM3-P" },
+      { key: "12K", label: "12kW", power: "12 kW", model: "SUN-12K-SG02LP1-EU-AM3-P" },
+    ],
+  },
+  "deye-sun-14-20k-sg05lp3": {
+    nameBase: "إنفرتر هجين Deye ثلاثي الطور جهد منخفض",
+    variants: [
+      { key: "14K", label: "14kW", power: "14 kW", model: "SUN-14K-SG05LP3-EU-SM2" },
+      { key: "15K", label: "15kW", power: "15 kW", model: "SUN-15K-SG05LP3-EU-SM2" },
+      { key: "16K", label: "16kW", power: "16 kW", model: "SUN-16K-SG05LP3-EU-SM2" },
+      { key: "18K", label: "18kW", power: "18 kW", model: "SUN-18K-SG05LP3-EU-SM2" },
+      { key: "20K", label: "20kW", power: "20 kW", model: "SUN-20K-SG05LP3-EU-SM2" },
+    ],
+  },
+  "deye-sun-29-9-50k-sg01hp3": {
+    nameBase: "إنفرتر هجين Deye ثلاثي الطور جهد عالٍ",
+    variants: [
+      { key: "29.9K", label: "29.9kW", power: "29.9 kW", model: "SUN-29.9K-SG01HP3-EU-BM3" },
+      { key: "30K", label: "30kW", power: "30 kW", model: "SUN-30K-SG01HP3-EU-BM3" },
+      { key: "35K", label: "35kW", power: "35 kW", model: "SUN-35K-SG01HP3-EU-BM3" },
+      { key: "40K", label: "40kW", power: "40 kW", model: "SUN-40K-SG01HP3-EU-BM4" },
+      { key: "50K", label: "50kW", power: "50 kW", model: "SUN-50K-SG01HP3-EU-BM4" },
+    ],
+  },
+  "deye-sun-60-80k-sg02hp3": {
+    nameBase: "إنفرتر هجين Deye ثلاثي الطور جهد عالٍ",
+    variants: [
+      { key: "60K", label: "60kW", power: "60 kW", model: "SUN-60K-SG02HP3-EU-EM6" },
+      { key: "75K", label: "75kW", power: "75 kW", model: "SUN-75K-SG02HP3-EU-EM6" },
+      { key: "80K", label: "80kW", power: "80 kW", model: "SUN-80K-SG02HP3-EU-EM6" },
+    ],
+  },
+  "solis-s6-eh2p-5-8k": {
+    nameBase: "إنفرتر تخزين Solis ‏Split Phase",
+    variants: [
+      { key: "5K", label: "5kW", power: "5 kW", model: "S6-EH2P5K02-SV-YD-L" },
+      { key: "6K", label: "6kW", power: "6 kW", model: "S6-EH2P6K02-SV-YD-L" },
+      { key: "7.5K", label: "7.5kW", power: "7.5 kW", model: "S6-EH2P7.5K02-SV-YD-L" },
+      { key: "8K", label: "8kW", power: "8 kW", model: "S6-EH2P8K02-SV-YD-L" },
+    ],
+  },
+  "solis-s6-eh3p-12-20k-h": {
+    nameBase: "إنفرتر تخزين Solis ثلاثي الطور جهد عالٍ",
+    variants: [
+      { key: "12K", label: "12kW", power: "12 kW", model: "S6-EH3P12K-H" },
+      { key: "15K", label: "15kW", power: "15 kW", model: "S6-EH3P15K-H" },
+      { key: "20K", label: "20kW", power: "20 kW", model: "S6-EH3P20K-H" },
+    ],
+  },
+  "solis-s6-eh3p-29-9-50k-h": {
+    nameBase: "إنفرتر تخزين Solis ثلاثي الطور جهد عالٍ",
+    variants: [
+      { key: "29.9K", label: "29.9kW", power: "29.9 kW", model: "S6-EH3P29.9K-H" },
+      { key: "30K", label: "30kW", power: "30 kW", model: "S6-EH3P30K-H" },
+      { key: "40K", label: "40kW", power: "40 kW", model: "S6-EH3P40K-H" },
+      { key: "50K", label: "50kW", power: "50 kW", model: "S6-EH3P50K-H" },
+    ],
+  },
+  "solis-s6-eh3p-75-125k": {
+    nameBase: "إنفرتر تخزين Solis ثلاثي الطور جهد عالٍ",
+    variants: [
+      { key: "75K", label: "75kW", power: "75 kW", model: "S6-EH3P75K10-NV-YD-H" },
+      { key: "80K", label: "80kW", power: "80 kW", model: "S6-EH3P80K10-NV-YD-H" },
+      { key: "99.9K", label: "99.9kW", power: "99.9 kW", model: "S6-EH3P99.9K10-NV-YD-H" },
+      { key: "100K", label: "100kW", power: "100 kW", model: "S6-EH3P100K10-NV-YD-H" },
+      { key: "125K", label: "125kW", power: "125 kW", model: "S6-EH3P125K10-NV-YD-H" },
+    ],
+  },
+};
+
+const variantSlug = (key: string) => key.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+
+function expandProduct(base: Product): Product[] {
+  const def = INVERTER_VARIANTS[base.id];
+  if (!def) return [base];
+  return def.variants.map((v) => {
+    const idx = base.modelTable ? base.modelTable.models.indexOf(v.key) : -1;
+    const rows: [string, string][] =
+      idx >= 0 && base.modelTable ? base.modelTable.rows.map((r) => [r.label, r.values[idx] ?? "—"] as [string, string]) : [];
+    return {
+      ...base,
+      id: `${base.id}--${variantSlug(v.key)}`,
+      baseId: base.id,
+      name: `${def.nameBase} ${v.label}`,
+      model: v.model,
+      power: v.power,
+      specs: rows.length ? [{ title: `مواصفات موديل ${v.label}`, rows }, ...base.specs] : base.specs,
+      modelTable: undefined,
+    };
+  });
+}
+
+/** قائمة العرض في الكتالوج: كل قدرة إنفرتر صنف مستقل بدل النطاقات. */
+export const CATALOG_PRODUCTS: Product[] = PRODUCTS.flatMap(expandProduct);
+
 export function productsByCategory(cat: ProductCategory) {
-  return PRODUCTS.filter((p) => p.category === cat);
+  return CATALOG_PRODUCTS.filter((p) => p.category === cat);
 }
 export function findProduct(id: string) {
-  return PRODUCTS.find((p) => p.id === id);
+  return CATALOG_PRODUCTS.find((p) => p.id === id) ?? CATALOG_PRODUCTS.find((p) => p.baseId === id) ?? PRODUCTS.find((p) => p.id === id);
 }
+
 
 /** يطابق نص التوافق الرسمي مع منتجات الكتالوج (بالعلامة التجارية أو الموديل) — بدون أي تخمين. */
 export function matchCompatibleProducts(product: Product, text: string): Product[] {
