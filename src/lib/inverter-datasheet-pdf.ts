@@ -14,18 +14,27 @@ const abs = (u: string) => {
   return typeof window === "undefined" ? u : new URL(u, window.location.origin).href;
 };
 
-/** هل هذا الصنف إنفرتر بقدرة مفردة محددة يستحق كتالوجاً خاصاً به؟
- *  يشمل الموديلات المنبثقة (Deye/Solis) والإنفرترات ذات القدرة المفردة أصلاً (Li-Power). */
+/** هل هذا الصنف يستحق كتالوجاً خاصاً بقدرته وحدها؟
+ *  يشمل الموديلات المنبثقة (Deye/Solis)، والإنفرترات ذات القدرة المفردة (Li-Power)،
+ *  والألواح الشمسية (Suntech ‏595W و720W) حيث مواصفات كل لوح مستقلة عن بقية السلسلة. */
 export function hasModelDatasheet(product: Product): boolean {
+  if (product.category === "panels") return true;
   if (product.category !== "inverters") return false;
   if (product.baseId) return true;
   // قدرة مفردة بلا نطاق مثل «6.2 kW»
   return !/[–—-]|إلى/.test(product.power);
 }
 
+/** رمز الموديل وحده بلا ذكر بقية موديلات السلسلة بين قوسين. */
+const modelCode = (product: Product) => product.model.replace(/\s*\([^)]*\)\s*/g, " ").trim();
+
+/** اسم تصنيف المنتج كما يظهر في بطاقة الكتالوج. */
+const categoryLabel = (product: Product) =>
+  product.category === "panels" ? "الألواح الشمسية" : product.category === "batteries" ? "البطاريات" : "الإنفرترات";
+
 /** اسم الملف المقترح عند الحفظ كـ PDF. */
 export function datasheetFileName(product: Product): string {
-  const model = product.model.replace(/[^A-Za-z0-9.\-]+/g, "-").replace(/(^-|-$)/g, "");
+  const model = modelCode(product).replace(/[^A-Za-z0-9.\-]+/g, "-").replace(/(^-|-$)/g, "");
   return `ACTES-Datasheet-${model}.pdf`;
 }
 
@@ -116,7 +125,7 @@ export function buildDatasheetHtml(product: Product): string {
     <img src="${logo}" alt="ACTES"/>
     <div class="r">
       <div class="brand">${esc(product.brand)}</div>
-      <div class="model">${esc(product.model)}</div>
+      <div class="model">${esc(modelCode(product))}</div>
     </div>
   </div>
   <div class="bar"><span>الكتالوج الفني — Technical Datasheet</span><span class="pw">${esc(product.power)}</span></div>
@@ -126,10 +135,10 @@ export function buildDatasheetHtml(product: Product): string {
     <div class="info">
       <h2>${esc(product.name)}</h2>
       <table class="kv">
-        <tr><th>الموديل</th><td dir="ltr">${esc(product.model)}</td></tr>
+        <tr><th>الموديل</th><td dir="ltr">${esc(modelCode(product))}</td></tr>
         <tr><th>القدرة الاسمية</th><td dir="ltr">${esc(product.power)}</td></tr>
         <tr><th>العلامة التجارية</th><td>${esc(product.brand)}</td></tr>
-        <tr><th>الفئة</th><td>الإنفرترات</td></tr>
+        <tr><th>الفئة</th><td>${esc(categoryLabel(product))}</td></tr>
         ${product.certificates ? `<tr><th>الشهادات</th><td style="font-weight:600">${esc(product.certificates)}</td></tr>` : ""}
       </table>
       <p class="about">${esc(product.about)}</p>
@@ -154,12 +163,12 @@ export function buildDatasheetHtml(product: Product): string {
     <img src="${logo}" alt="ACTES"/>
     <div class="r">
       <div class="brand">المواصفات الفنية</div>
-      <div class="model">${esc(product.model)} — ${esc(product.power)}</div>
+      <div class="model">${esc(modelCode(product))} — ${esc(product.power)}</div>
     </div>
   </div>
   <div class="bar"><span>Technical Specifications</span><span class="pw">${esc(product.power)}</span></div>
   <div style="margin-top:3mm">${specTables(product)}</div>
-  <p class="note">جميع القيم الواردة أعلاه تخص موديل ${esc(product.model)} بقدرة ${esc(product.power)} حصراً، ومصدرها الكتالوج الرسمي للشركة المصنّعة. هذا المستند للأغراض الفنية والمعلوماتية فقط.</p>
+  <p class="note">جميع القيم الواردة أعلاه تخص موديل ${esc(modelCode(product))} بقدرة ${esc(product.power)} حصراً، ومصدرها الكتالوج الرسمي للشركة المصنّعة. هذا المستند للأغراض الفنية والمعلوماتية فقط.</p>
   <div class="ft">
     <span><b>شركة أكتس لأنظمة الطاقة وحلولها</b> — الدعم الفني والاستشارات الهندسية</span>
     <span>${esc(today)} — صفحة 2</span>
