@@ -72,12 +72,12 @@ export function buildDatasheetHtml(product: Product): string {
   .sheet{width:190mm;margin:0 auto;page-break-after:always}
   .sheet:last-child{page-break-after:auto}
 
-  .hd{display:flex;align-items:center;justify-content:space-between;gap:6mm;border-bottom:2.4pt solid #d81f26;padding-bottom:3mm}
+  .hd{display:flex;align-items:center;justify-content:space-between;gap:6mm;border-bottom:2.4pt solid #d81f26;padding-bottom:2mm}
   .hd img{height:16mm;object-fit:contain}
   .hd .r{text-align:left}
   .hd .brand{font-size:15pt;font-weight:800;letter-spacing:.5px;color:#14203a}
   .hd .model{font-size:10pt;font-weight:700;color:#d81f26;direction:ltr}
-  .bar{background:#14203a;color:#fff;padding:2.2mm 4mm;margin-top:0;font-size:10.5pt;font-weight:800;display:flex;justify-content:space-between;align-items:center}
+  .bar{background:#14203a;color:#fff;padding:1.5mm 4mm;margin-top:0;font-size:10.5pt;font-weight:800;display:flex;justify-content:space-between;align-items:center}
   .bar .pw{background:#d81f26;padding:.6mm 3mm;border-radius:2mm;direction:ltr;font-size:11pt}
 
   .top{display:flex;gap:5mm;margin-top:4mm;align-items:stretch}
@@ -95,14 +95,14 @@ export function buildDatasheetHtml(product: Product): string {
   .cols>div{flex:1}
   ul{margin:0;padding-inline-start:5mm;font-size:8.2pt;line-height:1.7}
 
-  .dt{width:100%;border-collapse:collapse;font-size:6.8pt;margin-bottom:1.6mm;page-break-inside:avoid}
+  .dt{width:100%;border-collapse:collapse;font-size:6.8pt;margin-bottom:1.1mm;page-break-inside:avoid}
   .dt thead th{background:#14203a;color:#fff;padding:1mm 2mm;text-align:right;font-size:7.9pt;font-weight:800}
   .dt tbody tr:nth-child(even){background:#f6f8fb}
   .dt .k{border:.5pt solid #cfd6e4;padding:.6mm 2mm;text-align:right;width:52mm;font-weight:700;background:transparent}
   .dt .v{border:.5pt solid #cfd6e4;padding:.6mm 2mm;font-weight:600}
   .dt tr{page-break-inside:avoid}
 
-  .ft{margin-top:3mm;page-break-inside:avoid;border-top:1pt solid #14203a;padding-top:2mm;display:flex;justify-content:space-between;font-size:7.4pt;color:#5a6580}
+  .ft{margin-top:2mm;page-break-inside:avoid;border-top:1pt solid #14203a;padding-top:2mm;display:flex;justify-content:space-between;font-size:7.4pt;color:#5a6580}
   .ft b{color:#14203a}
   .note{margin-top:1.5mm;page-break-inside:avoid;font-size:7.2pt;color:#7a8398}
 </style></head><body>
