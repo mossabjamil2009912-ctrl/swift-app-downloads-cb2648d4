@@ -168,7 +168,7 @@ export function buildDatasheetHtml(product: Product): string {
   </div>
   <div class="bar"><span>Technical Specifications</span><span class="pw">${esc(product.power)}</span></div>
   <div style="margin-top:3mm">${specTables(product)}</div>
-  <p class="note">جميع القيم الواردة أعلاه تخص موديل ${esc(product.model)} بقدرة ${esc(product.power)} حصراً، ومصدرها الكتالوج الرسمي للشركة المصنّعة. هذا المستند للأغراض الفنية والمعلوماتية فقط.</p>
+  <p class="note">جميع القيم الواردة أعلاه تخص موديل ${esc(modelCode(product))} بقدرة ${esc(product.power)} حصراً، ومصدرها الكتالوج الرسمي للشركة المصنّعة. هذا المستند للأغراض الفنية والمعلوماتية فقط.</p>
   <div class="ft">
     <span><b>شركة أكتس لأنظمة الطاقة وحلولها</b> — الدعم الفني والاستشارات الهندسية</span>
     <span>${esc(today)} — صفحة 2</span>
