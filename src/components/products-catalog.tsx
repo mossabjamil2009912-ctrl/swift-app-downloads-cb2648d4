@@ -324,9 +324,11 @@ function ShareSheet({ product, onClose }: { product: Product; onClose: () => voi
 
 function ProductDetail({ product, onOpen, onBack, backLabel }: { product: Product; onOpen: (id: string) => void; onBack: () => void; backLabel?: string | undefined }) {
   // فيديو تعريفي حقيقي داخل معرض ACTES يبدأ أولاً (إن توفر لهذا الموديل)، ثم تظهر تفاصيل المنتج.
-  const video = useMemo(() => getProductVideo(product.id), [product.id]);
+  const videoKey = product.baseId ?? product.id;
+  const video = useMemo(() => getProductVideo(videoKey), [videoKey]);
   const [reelDone, setReelDone] = useState(!video);
-  useEffect(() => { setReelDone(!getProductVideo(product.id)); }, [product.id]);
+  useEffect(() => { setReelDone(!getProductVideo(videoKey)); }, [videoKey]);
+
   // بعد الفيديو: لا نكرّر الاسم والموديل والقدرة والمواصفات (شرحها الفيديو)،
   // بل نكمل بقية صفحة الوصف: نبذة المنتج، المميزات، الاستخدامات، ولمن يناسب.
   const afterVideoText = useMemo(() => {
