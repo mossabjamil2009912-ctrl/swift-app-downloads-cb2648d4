@@ -14,9 +14,11 @@ const abs = (u: string) => {
   return typeof window === "undefined" ? u : new URL(u, window.location.origin).href;
 };
 
-/** هل هذا الصنف إنفرتر بقدرة مفردة محددة يستحق كتالوجاً خاصاً به؟
- *  يشمل الموديلات المنبثقة (Deye/Solis) والإنفرترات ذات القدرة المفردة أصلاً (Li-Power). */
+/** هل هذا الصنف يستحق كتالوجاً خاصاً بقدرته وحدها؟
+ *  يشمل الموديلات المنبثقة (Deye/Solis)، والإنفرترات ذات القدرة المفردة (Li-Power)،
+ *  والألواح الشمسية (Suntech ‏595W و720W) حيث مواصفات كل لوح مستقلة عن بقية السلسلة. */
 export function hasModelDatasheet(product: Product): boolean {
+  if (product.category === "panels") return true;
   if (product.category !== "inverters") return false;
   if (product.baseId) return true;
   // قدرة مفردة بلا نطاق مثل «6.2 kW»
