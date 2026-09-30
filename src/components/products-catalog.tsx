@@ -465,7 +465,19 @@ function ProductDetail({ product, onOpen, onBack, backLabel }: { product: Produc
           </Section>
         )}
         <Section icon={<FileText />} title="الكتالوجات والملفات">
+          {hasModelDatasheet(product) && (
+            <div className="mb-3 rounded-xl border border-brand/40 bg-brand/5 p-3">
+              <h3 className="mb-1 text-xs font-black text-navy">كتالوج خاص بهذا الموديل — {product.power}</h3>
+              <p className="mb-2 text-[11px] leading-5 text-muted-foreground">
+                ملف PDF رسمي بهوية أكتس يحتوي مواصفات {product.model} بقدرة {product.power} فقط، دون بقية موديلات السلسلة.
+              </p>
+              <button type="button" onClick={() => openInverterDatasheet(product)} className="inline-flex items-center gap-1.5 rounded-full bg-brand px-3.5 py-1.5 text-xs font-bold text-brand-foreground transition hover:opacity-90">
+                <Download className="size-3.5" /> كتالوج الموديل PDF
+              </button>
+            </div>
+          )}
           <div className="space-y-3">
+
             {FILE_GROUPS.map((g) => {
               const items = product.files.filter((f) => f.kind === g.kind);
               if (items.length === 0) return null;
