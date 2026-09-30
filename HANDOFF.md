@@ -99,8 +99,8 @@
 - الناتج يُحفظ في نفس المسار `src/assets/showroom/<id>.mp4` (يُحدَّث ملف `.asset.json` تلقائياً).
 - التكلفة التقريبية: ~6.09 رصيد للمقطع الواحد.
 
-### منجز بالحجم الحقيقي 1080p (4)
-`pylontech-rv12314` · `pylontech-rv12100ch` · `pylontech-rv12200` · `deye-sun-3-6k-sg04lp1`
+### منجز بالحجم الحقيقي 1080p (5)
+`pylontech-rv12314` · `pylontech-rv12100ch` · `pylontech-rv12200` · `deye-sun-3-6k-sg04lp1` · `pylontech-powercube-m5a`
 
 ### لا تحتاج إعادة توليد (7)
 - الألواح (لا تُوضع على منصة، أبعادها معتمدة): `suntech-stp595s-c72-nsh` · `suntech-stp720s-d66-nsh`
