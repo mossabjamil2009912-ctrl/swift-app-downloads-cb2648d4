@@ -14,9 +14,13 @@ const abs = (u: string) => {
   return typeof window === "undefined" ? u : new URL(u, window.location.origin).href;
 };
 
-/** هل هذا الصنف موديل إنفرتر محدد القدرة يستحق كتالوجاً خاصاً به؟ */
+/** هل هذا الصنف إنفرتر بقدرة مفردة محددة يستحق كتالوجاً خاصاً به؟
+ *  يشمل الموديلات المنبثقة (Deye/Solis) والإنفرترات ذات القدرة المفردة أصلاً (Li-Power). */
 export function hasModelDatasheet(product: Product): boolean {
-  return product.category === "inverters" && !!product.baseId;
+  if (product.category !== "inverters") return false;
+  if (product.baseId) return true;
+  // قدرة مفردة بلا نطاق مثل «6.2 kW»
+  return !/[–—-]|إلى/.test(product.power);
 }
 
 /** اسم الملف المقترح عند الحفظ كـ PDF. */
