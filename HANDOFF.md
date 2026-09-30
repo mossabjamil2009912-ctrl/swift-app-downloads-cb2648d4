@@ -107,23 +107,20 @@
 - نسبها مقبولة أصلاً: `pylontech-fidus-battery-plus` · `hithium-heroee-maxpower-16` ·
   `deye-sun-29-9-50k-sg01hp3` (المرجع القياسي للمنصة) · `solis-s6-eh3p-12-20k-h` · `solis-s6-eh3p-29-9-50k-h`
 
-### المتبقي (10) — 3 في كل دفعة
+### المتبقي (9) — 3 في كل دفعة
 **الدفعة 1**
-1. `pylontech-powercube-m5a`
-2. `pylontech-powercube-m1c`
-3. `lipower-2012emh`
+1. `pylontech-powercube-m1c`
+2. `lipower-2012emh`
+3. `lipower-bz4024smhgw`
 
 **الدفعة 2**
-4. `lipower-bz4024smhgw`
-5. `lipower-bz6248smh`
-6. `solis-s6-eh2p-5-8k`
+4. `lipower-bz6248smh`
+5. `solis-s6-eh2p-5-8k`
+6. `deye-sun-7-6-12k-sg02lp1`
 
 **الدفعة 3**
-7. `deye-sun-7-6-12k-sg02lp1`
-8. `deye-sun-14-20k-sg05lp3`
-9. `deye-sun-60-80k-sg02hp3`
-
-**الدفعة 4**
-10. `solis-s6-eh3p-75-125k`
+7. `deye-sun-14-20k-sg05lp3`
+8. `deye-sun-60-80k-sg02hp3`
+9. `solis-s6-eh3p-75-125k`
 
 
