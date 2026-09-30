@@ -163,7 +163,7 @@ export function buildDatasheetHtml(product: Product): string {
     <img src="${logo}" alt="ACTES"/>
     <div class="r">
       <div class="brand">المواصفات الفنية</div>
-      <div class="model">${esc(product.model)} — ${esc(product.power)}</div>
+      <div class="model">${esc(modelCode(product))} — ${esc(product.power)}</div>
     </div>
   </div>
   <div class="bar"><span>Technical Specifications</span><span class="pw">${esc(product.power)}</span></div>
