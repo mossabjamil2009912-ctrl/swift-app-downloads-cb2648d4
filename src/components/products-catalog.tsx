@@ -66,7 +66,7 @@ function BackButton({ onClick, label }: { onClick: () => void; label: string }) 
 /** صور المعاينة المختارة لكل فئة على بطاقات الأقسام (صور المنتجات الحقيقية). */
 const PREVIEW_IDS: Partial<Record<ProductCategory, string[]>> = {
   batteries: ["pylontech-powercube-m1c", "hithium-heroee-maxpower-16", "pylontech-rv12100ch"],
-  inverters: ["deye-sun-3-6k-sg04lp1", "solis-s6-eh2p-5-8k", "lipower-2012emh"],
+  inverters: ["deye-sun-3-6k-sg04lp1--3-6k-sm2", "solis-s6-eh2p-5-8k--5k", "lipower-2012emh"],
 };
 
 /** المستوى الأول: ثلاث بطاقات ضخمة للأقسام. */
@@ -324,9 +324,11 @@ function ShareSheet({ product, onClose }: { product: Product; onClose: () => voi
 
 function ProductDetail({ product, onOpen, onBack, backLabel }: { product: Product; onOpen: (id: string) => void; onBack: () => void; backLabel?: string | undefined }) {
   // فيديو تعريفي حقيقي داخل معرض ACTES يبدأ أولاً (إن توفر لهذا الموديل)، ثم تظهر تفاصيل المنتج.
-  const video = useMemo(() => getProductVideo(product.id), [product.id]);
+  const videoKey = product.baseId ?? product.id;
+  const video = useMemo(() => getProductVideo(videoKey), [videoKey]);
   const [reelDone, setReelDone] = useState(!video);
-  useEffect(() => { setReelDone(!getProductVideo(product.id)); }, [product.id]);
+  useEffect(() => { setReelDone(!getProductVideo(videoKey)); }, [videoKey]);
+
   // بعد الفيديو: لا نكرّر الاسم والموديل والقدرة والمواصفات (شرحها الفيديو)،
   // بل نكمل بقية صفحة الوصف: نبذة المنتج، المميزات، الاستخدامات، ولمن يناسب.
   const afterVideoText = useMemo(() => {
