@@ -48,8 +48,7 @@ function specTables(product: Product): string {
  * يفتح كتالوج الموديل كصفحة طباعة A4 جاهزة للحفظ كـ PDF.
  * التنسيق: ترويسة بشعار أكتس واسم المصنّع، بطاقة الصنف بالقدرة الصريحة، جدول المواصفات، تذييل رسمي.
  */
-export function openInverterDatasheet(product: Product): void {
-  if (typeof window === "undefined") return;
+export function buildDatasheetHtml(product: Product): string {
   const logo = abs(actesLogo.url);
   const photo = abs(product.image);
   const today = new Date().toLocaleDateString("en-GB");
@@ -165,7 +164,13 @@ export function openInverterDatasheet(product: Product): void {
 
 <script>window.onload=function(){setTimeout(function(){window.print()},500)}<\/script>
 </body></html>`;
+  return html;
+}
 
+/** يفتح كتالوج الموديل في نافذة طباعة جاهزة للحفظ كـ PDF. */
+export function openInverterDatasheet(product: Product): void {
+  if (typeof window === "undefined") return;
+  const html = buildDatasheetHtml(product);
   const w = window.open("", "_blank");
   if (!w) return;
   w.document.open();
